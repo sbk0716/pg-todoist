@@ -9,8 +9,8 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /src
 
-# Install poetry/mysqlclient/starlette using pip.
-RUN pip install poetry mysqlclient starlette
+# Install poetry/psycopg2/starlette using pip.
+RUN pip install poetry psycopg2 starlette
 
 # poetryの定義ファイルをコピー (存在する場合)
 COPY pyproject.toml* poetry.lock* ./

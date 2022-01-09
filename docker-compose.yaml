@@ -12,12 +12,12 @@ services:
   app-db:
     # Files containing environment variables that will be included
     env_file: .env
-    image: mysql:8.0
+    image: postgres:14.1-alpine
     platform: linux/x86_64  # M1 Macの場合必要
     volumes:
-      - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
+      - postgres_data:/var/lib/postgresql/data/
     ports:
-      - 13306:3306  # ホストマシンのポート13306を、docker内のポート3306に接続する
+      - 15432:5432  # ホストマシンのポート13306を、docker内のポート3306に接続する
+
 volumes:
-  mysql_data:
+    postgres_data:

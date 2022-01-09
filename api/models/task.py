@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 
-from api.db import Base
-
+from sqlalchemy.orm import declarative_base
+Base = declarative_base()
 
 class Task(Base):
     __tablename__ = "tasks"

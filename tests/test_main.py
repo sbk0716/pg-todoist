@@ -10,8 +10,8 @@ from api import environ
 from fastapi import FastAPI
 
 ASYNC_DB_URL = environ.ASYNC_DB_URL
-MYSQL_DATABASE = environ.MYSQL_DATABASE
-print(f"MYSQL_DATABASE: {MYSQL_DATABASE}")
+POSTGRES_DB = environ.POSTGRES_DB
+print(f"POSTGRES_DB: {POSTGRES_DB}")
 
 # ?ASYNC_DB_URL = "sqlite+aiosqlite:///:memory"
 

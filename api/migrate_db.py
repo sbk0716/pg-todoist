@@ -6,8 +6,8 @@ from api import environ
 
 # Define DB_URL
 DB_URL = environ.DB_URL
-MYSQL_DATABASE = environ.MYSQL_DATABASE
-print(f"MYSQL_DATABASE: {MYSQL_DATABASE}")
+POSTGRES_DB = environ.POSTGRES_DB
+print(f"POSTGRES_DB: {POSTGRES_DB}")
 # DB_URL = "mysql+pymysql://root@db:3306/demo?charset=utf8"
 
 engine = create_engine(DB_URL, echo=True)
