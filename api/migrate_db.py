@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 
 from api.models.task import Base
 
-from api import environ
+from api.core import environ
 
 # Define DB_URL
 DB_URL = environ.DB_URL

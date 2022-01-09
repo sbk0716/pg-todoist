@@ -1,13 +1,15 @@
-from fastapi import APIRouter, HTTPException, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, status, Depends
+import api.schemas.task as task_schema
+from api.db.repositories.task import TasksRepository
+from api.dependencies.db import get_repository
 
-import api.schemas.done as done_schema
-import api.db.repositories.done as done_crud
-from api.db import get_db
+from api.core.logging import logger
 
 router = APIRouter()
 
-
+@router.get("/")
+async def test():
+    return "test"
 # @router.put("/tasks/{task_id}/done", response_model=done_schema.DoneResponse)
 # async def mark_task_as_done(task_id: int, db: AsyncSession = Depends(get_db)):
 #     done = await done_crud.get_done(db, task_id=task_id)

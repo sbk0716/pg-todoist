@@ -8,7 +8,7 @@ import api.models.task as task_model
 
 from api.db.repositories.base import BaseRepository
 
-class DonesRepository(BaseRepository):
+# class DonesRepository(BaseRepository):
     # async def get_done(self, db: AsyncSession, task_id: int) -> Optional[task_model.Done]:
     #     db = self.db
     #     result: Result = await db.execute(

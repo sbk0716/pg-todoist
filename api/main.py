@@ -1,19 +1,44 @@
 from fastapi import FastAPI
-import logging
-from api.routers import task
+from fastapi.middleware.cors import CORSMiddleware
+
+from api.infra.routers import router as api_router
+from api.core import environ
 from api.db.connection import connect_to_db, close_db_connection
 
-# Set the logging level of this logger for uvicorn.
-logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.INFO)
+# An instance of the class FastAPI will be the main point of interaction to create all your API.
+# https://fastapi.tiangolo.com/tutorial/first-steps/#step-2-create-a-fastapi-instance
+app = FastAPI(
+    title=environ.PROJECT_NAME,
+    description=environ.DESCRIPTION,
+    version=environ.VERSION,
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
 
-app = FastAPI()
+# Create a list of allowed origins (as strings).
+origins = [
+    # "http://grasswood.tk",
+    # "https://grasswood.tk",
+    "http://localhost"
+]
+
+# Add the parameter as a "middleware" to your FastAPI application.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # A list of origins that should be permitted to make cross-origin requests.
+    allow_credentials=True,  # Indicate that cookies should be supported for cross-origin requests.
+    allow_methods=["*"],  # A list of HTTP methods that should be allowed for cross-origin requests.
+    allow_headers=["*"],  # A list of HTTP request headers that should be supported for cross-origin requests.
+)
+
+# Add api router with all routes configured to your FastAPI application.
+app.include_router(api_router, prefix=environ.API_PREFIX)
+
 @app.on_event("startup")
 async def startup():
     """
     startup function
     """
-    logger.info("[startup]database.connect")
     await connect_to_db(app)
 
 @app.on_event("shutdown")
@@ -21,9 +46,4 @@ async def shutdown():
     """
     shutdown function
     """
-    logger.info("[shutdown]database.disconnect")
     await close_db_connection(app)
-
-
-app.include_router(task.router)
-# app.include_router(done.router)

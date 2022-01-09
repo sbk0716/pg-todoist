@@ -6,7 +6,7 @@ from starlette.requests import Request
 from api.db import get_db, Base
 from api.main import app
 import starlette.status
-from api import environ
+from api.core import environ
 from fastapi import FastAPI
 
 ASYNC_DB_URL = environ.ASYNC_DB_URL

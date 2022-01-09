@@ -2,9 +2,8 @@ from fastapi import APIRouter, status, Depends
 import api.schemas.task as task_schema
 from api.db.repositories.task import TasksRepository
 from api.dependencies.db import get_repository
-import logging
-logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.INFO)
+
+from api.core.logging import logger
 
 router = APIRouter()
 
@@ -31,7 +30,7 @@ router = APIRouter()
 #     return task
 
 @router.post(
-    "/tasks",
+    "/",
     response_model=task_schema.TaskCreateResponse,
     name="tasks:create_task",
     status_code=status.HTTP_201_CREATED,
@@ -49,14 +48,6 @@ async def create_task(
     logger.info("created_task")
     logger.info(created_task)
     return created_task
-# async def create_task(
-#         task_body: task_schema.TaskCreate,
-#         db: AsyncSession = Depends(get_db)
-#     ):
-#     '''
-#     create_task method
-#     '''
-#     return await task_crud.create_task(db, task_body)
 
 
 # @router.post('/',
