@@ -15,9 +15,11 @@ print(f"POSTGRES_DB: {POSTGRES_DB}")
 
 # ?ASYNC_DB_URL = "sqlite+aiosqlite:///:memory"
 
+
 @pytest.fixture
 def app() -> FastAPI:
     from api.main import app
+
     return app
 
 
@@ -25,25 +27,23 @@ def app() -> FastAPI:
 # def db(app: FastAPI) -> AsyncSession:
 #     return app.state._db
 
+
 @pytest.fixture
 async def async_client(app: FastAPI) -> AsyncClient:
-    '''
+    """
     Async用のengineとsessionを作成
     テスト用にオンメモリのSQLiteテーブルを初期化（関数ごとにリセット）
     DIを使ってFastAPIのDBの向き先をテスト用DBに変更
     テスト用に非同期HTTPクライアントを返却
-    '''
+    """
     # Async用のengineとsessionを作成
     async_engine = create_async_engine(ASYNC_DB_URL, echo=True)
-    async_session = sessionmaker(
-        autocommit=False, autoflush=False, bind=async_engine, class_=AsyncSession
-    )
+    async_session = sessionmaker(autocommit=False, autoflush=False, bind=async_engine, class_=AsyncSession)
 
     # テスト用にオンメモリのSQLiteテーブルを初期化（関数ごとにリセット）
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
-
 
     # DIを使ってFastAPIのDBの向き先をテスト用DBに変更
     async def get_test_db(request: Request):
@@ -60,7 +60,6 @@ async def async_client(app: FastAPI) -> AsyncClient:
         yield client
 
 
-
 @pytest.mark.asyncio
 async def test_create_and_read(async_client):
     response = await async_client.post("/tasks", json={"title": "テストタスク"})
@@ -74,6 +73,7 @@ async def test_create_and_read(async_client):
     assert len(response_obj) == 1
     assert response_obj[0]["title"] == "テストタスク"
     assert response_obj[0]["done"] is False
+
 
 @pytest.mark.asyncio
 async def test_done_flag(async_client):

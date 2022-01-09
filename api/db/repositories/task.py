@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-import api.models.task as task_model
-import api.schemas.task as task_schema
+import api.domain.models.task as task_model
+import api.interfaces.schemas.task as task_schema
 from typing import List, Tuple, Optional
 from sqlalchemy import select
 from sqlalchemy.engine import Result
@@ -8,28 +8,22 @@ from sqlalchemy.engine import Result
 from api.db.repositories.base import BaseRepository
 import api.db.queries.tasks as query
 
+
 class TasksRepository(BaseRepository):
-    async def create_task(
-            self,
-            task_body: task_schema.TaskCreate
-        ) -> task_model.Task:
-        '''
+    async def create_task(self, task_body: task_schema.TaskCreate) -> task_model.Task:
+        """
         create_task
-        '''
+        """
         query_values = task_body.dict()
         print("query_values")
         print(query_values)
-        task = await self.db.fetch_one(
-            query=query.CREATE_TASK_QUERY,
-            values=query_values
-        )
+        task = await self.db.fetch_one(query=query.CREATE_TASK_QUERY, values=query_values)
         print("task")
         print(task)
         task_instance = task_model.Task(**task)
         print("task_instance")
         print(task_instance)
         return task_instance
-
 
     # async def get_tasks_with_done(
     #         self,

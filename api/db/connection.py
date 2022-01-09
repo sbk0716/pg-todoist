@@ -6,6 +6,7 @@ from api.core.logging import logger
 DB_URL = environ.DB_URL
 POSTGRES_DB = environ.POSTGRES_DB
 
+
 async def connect_to_db(app: FastAPI) -> None:
     """
     Connect to the database
@@ -20,6 +21,7 @@ async def connect_to_db(app: FastAPI) -> None:
         logger.warn("--- [DB CONNECTION][CONNECT][ERROR] ---")
         logger.warn(e)
         raise e
+
 
 async def close_db_connection(app: FastAPI) -> None:
     """

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends
-import api.schemas.task as task_schema
+import api.interfaces.schemas.task as task_schema
 from api.db.repositories.task import TasksRepository
 from api.dependencies.db import get_repository
 
@@ -7,9 +7,12 @@ from api.core.logging import logger
 
 router = APIRouter()
 
+
 @router.get("/")
 async def test():
     return "test"
+
+
 # @router.put("/tasks/{task_id}/done", response_model=done_schema.DoneResponse)
 # async def mark_task_as_done(task_id: int, db: AsyncSession = Depends(get_db)):
 #     done = await done_crud.get_done(db, task_id=task_id)

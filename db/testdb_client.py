@@ -10,6 +10,7 @@ POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 DB_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{DEFAULT_POSTGRES_DB}"
 TEST_DB = "testdb"
 
+
 def drop_all(connection):
     # Generate cursor.
     cursor = connection.cursor()
@@ -24,6 +25,7 @@ def drop_all(connection):
 
     cursor.close()
 
+
 def create_all(connection):
     # Generate cursor.
     cursor = connection.cursor()
@@ -37,7 +39,7 @@ def create_all(connection):
     cursor.execute(create_role)
 
     # SHOW DATABASES
-    cursor.execute('SELECT datname, datdba, encoding, datcollate, datctype from pg_database;')
+    cursor.execute("SELECT datname, datdba, encoding, datcollate, datctype from pg_database;")
     rows = cursor.fetchall()
     print("==================================================")
     print("1. SELECT datname, datdba, encoding, datcollate, datctype from pg_database")
@@ -47,7 +49,7 @@ def create_all(connection):
     print("==================================================")
 
     # SHOW DATABASES
-    cursor.execute('SELECT * FROM pg_user;')
+    cursor.execute("SELECT * FROM pg_user;")
     rows = cursor.fetchall()
     print("==================================================")
     print("2. SELECT * FROM pg_user")
@@ -57,6 +59,7 @@ def create_all(connection):
     print("==================================================")
 
     cursor.close()
+
 
 if __name__ == "__main__":
     # Connect to database.

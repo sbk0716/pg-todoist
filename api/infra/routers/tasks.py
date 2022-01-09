@@ -1,5 +1,5 @@
 from fastapi import APIRouter, status, Depends
-import api.schemas.task as task_schema
+import api.interfaces.schemas.task as task_schema
 from api.db.repositories.task import TasksRepository
 from api.dependencies.db import get_repository
 
@@ -29,6 +29,7 @@ router = APIRouter()
 
 #     return task
 
+
 @router.post(
     "/",
     response_model=task_schema.TaskCreateResponse,
@@ -36,12 +37,12 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 async def create_task(
-        task_body: task_schema.TaskCreate,
-        tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
-    ):
-    '''
+    task_body: task_schema.TaskCreate,
+    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
+):
+    """
     create_task method
-    '''
+    """
     logger.info("tasks_repo")
     logger.info(tasks_repo)
     created_task = await tasks_repo.create_task(task_body=task_body)

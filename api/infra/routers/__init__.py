@@ -3,7 +3,7 @@
 from fastapi import APIRouter
 
 # Import task router with all routes configured.
-from api.infra.routers.task import router as task_router
+from api.infra.routers.tasks import router as task_router
 
 # Import done router with all routes configured.
 # from api.infra.routers.done import router as done_router

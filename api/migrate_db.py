@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 
-from api.models.task import Base
+from api.domain.models.task import Base
 
 from api.core import environ
 

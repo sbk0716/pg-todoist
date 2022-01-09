@@ -34,6 +34,8 @@ app.add_middleware(
 # Add api router with all routes configured to your FastAPI application.
 app.include_router(api_router, prefix=environ.API_PREFIX)
 
+
+# add a function that should be run before the application starts.
 @app.on_event("startup")
 async def startup():
     """
@@ -41,6 +43,8 @@ async def startup():
     """
     await connect_to_db(app)
 
+
+# add a function that should be run when the application is shutting down.
 @app.on_event("shutdown")
 async def shutdown():
     """
