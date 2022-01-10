@@ -1,9 +1,4 @@
-# Import pydantic
-# https://pydantic-docs.helpmanual.io/
 from pydantic import BaseModel, Field, validator
-
-# Import typing
-# https://docs.python.org/3/library/typing.html
 from typing import Optional
 from datetime import datetime, timedelta, timezone
 from enum import IntEnum

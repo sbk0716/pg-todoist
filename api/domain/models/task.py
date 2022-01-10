@@ -1,18 +1,23 @@
 from sqlalchemy import Column, Integer, String, Enum, ForeignKey, TIMESTAMP, DateTime, text
 from sqlalchemy.sql.functions import current_timestamp
-from datetime import datetime, timedelta, timezone
-from pydantic import BaseModel, validator
-from sqlalchemy.sql import func
-
-# Import relationship function
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, registry
+from datetime import timedelta, timezone
 import enum
-from typing import Optional
 from sqlalchemy.orm import declarative_base
 
 JST = timezone(timedelta(hours=+9), "JST")
 
-Base = declarative_base()
+# ================================================================================
+# Execute __init__ method | sqlalchemy.orm.registry.__init__()
+# ================================================================================
+# Construct a new registry
+mapper_registry = registry()
+
+# ================================================================================
+# Execute generate_base method | method sqlalchemy.orm.registry.generate_base()
+# ================================================================================
+# Generate a declarative base class.
+Base = mapper_registry.generate_base()
 
 
 class StatusType(int, enum.Enum):
@@ -40,7 +45,6 @@ class Task(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(1024), nullable=False)
     detail = Column(String(4096), nullable=False)
-    # created_date = Column("created_date", DateTime, default=func.now(), nullable=True)
     # status_type = Column("status_type", Enum(StatusType), nullable=False)
     created_at = Column(
         "created_at",
@@ -54,18 +58,6 @@ class Task(Base):
         nullable=False,
         server_default=current_timestamp(),
     )
-    # created_at = Column(
-    #     "created_at",
-    #     TIMESTAMP(timezone=True),
-    #     nullable=False,
-    #     server_default=current_timestamp(),
-    # )
-    # updated_at = Column(
-    #     "updated_at",
-    #     TIMESTAMP(timezone=True),
-    #     nullable=False,
-    #     server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
-    # )
 
     # ================================================================================
     # execute relationship function | sqlalchemy.orm.relationship()
@@ -98,18 +90,6 @@ class Done(Base):
         nullable=False,
         server_default=current_timestamp(),
     )
-    # created_at = Column(
-    #     "created_at",
-    #     TIMESTAMP(timezone=True),
-    #     nullable=False,
-    #     server_default=current_timestamp(),
-    # )
-    # updated_at = Column(
-    #     "updated_at",
-    #     TIMESTAMP(timezone=True),
-    #     nullable=False,
-    #     server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
-    # )
 
     # ================================================================================
     # execute relationship function | sqlalchemy.orm.relationship()

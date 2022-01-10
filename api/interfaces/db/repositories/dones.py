@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import api.domain.models.task as task_model
 
-from api.db.repositories.base import BaseRepository
+from api.interfaces.db.repositories.base import BaseRepository
 
 # class DonesRepository(BaseRepository):
 # async def get_done(self, db: AsyncSession, task_id: int) -> Optional[task_model.Done]:

@@ -1,13 +1,20 @@
 from datetime import datetime, timezone
 from typing import List
 from api.core.logging import logger
-import api.db.queries.tasks as query
-from api.db.repositories.base import BaseRepository
+from api.interfaces.db.repositories.base import BaseRepository
 from api.interfaces.schemas.task import (
     TaskDoneRead,
     TaskRead,
     TaskCreate,
     TaskUpdate,
+)
+from api.interfaces.db.queries.tasks import (
+    CREATE_TASK_QUERY,
+    GET_ALL_TASK_WITH_DONE_QUERY,
+    GET_TASK_WITH_DONE_BY_ID_QUERY,
+    GET_TASK_BY_ID_QUERY,
+    UPDATE_TASK_BY_ID_QUERY,
+    DELETE_TASK_BY_ID_QUERY,
 )
 
 
@@ -19,7 +26,7 @@ class TasksRepository(BaseRepository):
         logger.info("execute create_task method")
         try:
             query_values = task_body.dict()
-            task = await self.db.fetch_one(query=query.CREATE_TASK_QUERY, values=query_values)
+            task = await self.db.fetch_one(query=CREATE_TASK_QUERY, values=query_values)
             logger.info("[databases.backends.postgres.Record]")
             logger.info(dict(task.items()))
             task = TaskRead(**task)
@@ -36,7 +43,7 @@ class TasksRepository(BaseRepository):
         """
         logger.info("execute get_all_task_with_done method")
         try:
-            task_list = await self.db.fetch_all(query=query.GET_ALL_TASK_WITH_DONE_QUERY)
+            task_list = await self.db.fetch_all(query=GET_ALL_TASK_WITH_DONE_QUERY)
             if len(task_list) != 0:
                 task_read_list: List[TaskDoneRead] = [TaskDoneRead(**task) for task in task_list]
                 return task_read_list
@@ -55,7 +62,7 @@ class TasksRepository(BaseRepository):
         logger.info("execute get_task_with_done method")
         try:
             task = await self.db.fetch_one(
-                query=query.GET_TASK_WITH_DONE_BY_ID_QUERY, values={"id": task_id}
+                query=GET_TASK_WITH_DONE_BY_ID_QUERY, values={"id": task_id}
             )
             if task is None:
                 return None
@@ -75,7 +82,7 @@ class TasksRepository(BaseRepository):
         """
         logger.info("execute get_task_by_id method")
         try:
-            task = await self.db.fetch_one(query=query.GET_TASK_BY_ID_QUERY, values={"id": task_id})
+            task = await self.db.fetch_one(query=GET_TASK_BY_ID_QUERY, values={"id": task_id})
             if task is None:
                 return None
             logger.info("[databases.backends.postgres.Record]")
@@ -104,7 +111,7 @@ class TasksRepository(BaseRepository):
             # execute pydantic BaseModel.copy method
             updated_params = task.copy(update=update_data)
             query_values = updated_params.dict()
-            task = await self.db.fetch_one(query=query.UPDATE_TASK_BY_ID_QUERY, values=query_values)
+            task = await self.db.fetch_one(query=UPDATE_TASK_BY_ID_QUERY, values=query_values)
             logger.info("[databases.backends.postgres.Record]")
             logger.info(dict(task.items()))
             task = TaskRead(**task)
@@ -124,9 +131,7 @@ class TasksRepository(BaseRepository):
             task = await self.get_task_by_id(task_id=task_id)
             if task is None:
                 return None
-            task = await self.db.fetch_one(
-                query=query.DELETE_TASK_BY_ID_QUERY, values={"id": task_id}
-            )
+            task = await self.db.fetch_one(query=DELETE_TASK_BY_ID_QUERY, values={"id": task_id})
             logger.info("[databases.backends.postgres.Record]")
             logger.info(dict(task.items()))
             task = TaskRead(**task)
@@ -136,8 +141,3 @@ class TasksRepository(BaseRepository):
             logger.error(e)
             logger.error("--- [ERROR] ---")
             raise e
-
-    # async def delete_task(self, db: AsyncSession, original: task_model.Task) -> None:
-    #     db = self.db
-    #     await db.delete(original)
-    #     await db.commit()

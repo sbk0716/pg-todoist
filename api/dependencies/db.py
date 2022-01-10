@@ -2,10 +2,9 @@ from fastapi import Depends
 from starlette.requests import Request
 from databases import Database
 from typing import Callable, Type
-
 from api.core import environ
 from api.core.logging import logger
-from api.db.repositories.base import BaseRepository
+from api.interfaces.db.repositories.base import BaseRepository
 
 DB_URL = environ.DB_URL
 POSTGRES_DB = environ.POSTGRES_DB

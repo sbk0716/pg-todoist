@@ -1,9 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from api.infra.routers import router as api_router
 from api.core import environ
-from api.db.connection import connect_to_db, close_db_connection
+from api.infra.routers import router as api_router
+from api.infra.db.connection import connect_to_db, close_db_connection
 
 # An instance of the class FastAPI will be the main point of interaction to create all your API.
 # https://fastapi.tiangolo.com/tutorial/first-steps/#step-2-create-a-fastapi-instance

@@ -2,7 +2,7 @@ from fastapi import APIRouter, status, Depends, HTTPException
 from typing import List
 from api.core.logging import logger
 from api.dependencies.db import get_repository
-from api.db.repositories.tasks import TasksRepository
+from api.interfaces.db.repositories.tasks import TasksRepository
 from api.interfaces.schemas.task import (
     TaskDoneRead,
     TaskRead,

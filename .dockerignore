@@ -1,0 +1,16 @@
+.DS_Store
+.coverage
+.dockerignore
+.dockervenv
+.git
+.github
+.gitignore
+.pytest_cache
+.venv
+.vscode
+env.sample
+*.md
+docker-compose.yaml
+env.sample
+htmlcov
+setup.cfg
