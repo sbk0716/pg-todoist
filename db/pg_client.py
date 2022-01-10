@@ -9,6 +9,7 @@ POSTGRES_SERVER = config("POSTGRES_SERVER", cast=str, default="app-db")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 DB_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{DEFAULT_POSTGRES_DB}"
 TEST_DB = "testdb"
+CORE_DB = "coredb"
 
 
 def drop_all(connection):
@@ -16,11 +17,11 @@ def drop_all(connection):
     cursor = connection.cursor()
 
     # DROP DATABASE
-    drop_db = f"DROP DATABASE {TEST_DB}"
+    drop_db = f"DROP DATABASE {TEST_DB};"
     cursor.execute(drop_db)
 
     # DROP ROLE
-    drop_role = f"DROP ROLE root"
+    drop_role = f"DROP ROLE root;"
     cursor.execute(drop_role)
 
     cursor.close()
@@ -31,12 +32,19 @@ def create_all(connection):
     cursor = connection.cursor()
 
     # CREATE DATABASE
-    create_db = f"CREATE DATABASE {TEST_DB}"
+    create_db = f"CREATE DATABASE {TEST_DB};"
     cursor.execute(create_db)
 
     # CREATE ROLE
-    create_role = f"CREATE ROLE root LOGIN SUPERUSER PASSWORD '{POSTGRES_PASSWORD}'"
+    create_role = f"CREATE ROLE root LOGIN SUPERUSER PASSWORD '{POSTGRES_PASSWORD}';"
     cursor.execute(create_role)
+
+    # ALTER DATABASE
+    alter_db = f"""
+        ALTER DATABASE {TEST_DB} SET timezone TO 'Asia/Tokyo';
+        ALTER DATABASE {CORE_DB} SET timezone TO 'Asia/Tokyo';
+    """
+    cursor.execute(alter_db)
 
     # SHOW DATABASES
     cursor.execute("SELECT datname, datdba, encoding, datcollate, datctype from pg_database;")

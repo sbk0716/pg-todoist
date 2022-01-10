@@ -1,18 +1,52 @@
 from fastapi import APIRouter, status, Depends
-import api.interfaces.schemas.task as task_schema
-from api.db.repositories.task import TasksRepository
-from api.dependencies.db import get_repository
-
+from typing import List, Dict, Any
 from api.core.logging import logger
+from api.dependencies.db import get_repository
+from api.db.repositories.tasks import TasksRepository
+from api.domain.models.task import Task
+from api.interfaces.schemas.task import (
+    TaskRead,
+    TaskCreate,
+    TaskCreateResponse,
+    TaskUpdate,
+    TaskUpdateResponse,
+    TaskDeleteResponse,
+)
 
 router = APIRouter()
 
-# @router.get("/tasks", response_model=List[task_schema.Task])
-# async def list_tasks(db: AsyncSession = Depends(get_db)):
-#     '''
-#     list_tasks method
-#     '''
-#     return await task_crud.get_tasks_with_done(db)
+
+@router.get(
+    "/",
+    response_model=List[TaskRead],
+    name="tasks:list_tasks",
+    status_code=status.HTTP_200_OK,
+)
+async def list_tasks(
+    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
+) -> List[TaskRead]:
+    """
+    list_tasks function
+    """
+    task_list = await tasks_repo.get_all_task_with_done()
+    return task_list
+
+
+@router.get(
+    "/{task_id}/",
+    response_model=TaskRead,
+    name="tasks:get_task",
+    status_code=status.HTTP_200_OK,
+)
+async def get_task(
+    task_id: int, tasks_repo: TasksRepository = Depends(get_repository(TasksRepository))
+) -> List[TaskRead]:
+    """
+    get_task function
+    """
+    task = await tasks_repo.get_task_with_done(task_id=task_id)
+    return task
+
 
 # @router.get("/tasks/{task_id}", response_model=task_schema.Task)
 # async def get_task(
@@ -32,14 +66,14 @@ router = APIRouter()
 
 @router.post(
     "/",
-    response_model=task_schema.TaskCreateResponse,
+    response_model=TaskCreateResponse,
     name="tasks:create_task",
     status_code=status.HTTP_201_CREATED,
 )
 async def create_task(
-    task_body: task_schema.TaskCreate,
+    task_body: TaskCreate,
     tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
-):
+) -> Task:
     """
     create_task method
     """

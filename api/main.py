@@ -28,14 +28,16 @@ app.add_middleware(
     allow_origins=origins,  # A list of origins that should be permitted to make cross-origin requests.
     allow_credentials=True,  # Indicate that cookies should be supported for cross-origin requests.
     allow_methods=["*"],  # A list of HTTP methods that should be allowed for cross-origin requests.
-    allow_headers=["*"],  # A list of HTTP request headers that should be supported for cross-origin requests.
+    allow_headers=[
+        "*"
+    ],  # A list of HTTP request headers that should be supported for cross-origin requests.
 )
 
 # Add api router with all routes configured to your FastAPI application.
 app.include_router(api_router, prefix=environ.API_PREFIX)
 
 
-# add a function that should be run before the application starts.
+# Add a function that should be run before the application starts.
 @app.on_event("startup")
 async def startup():
     """
@@ -44,7 +46,7 @@ async def startup():
     await connect_to_db(app)
 
 
-# add a function that should be run when the application is shutting down.
+# Add a function that should be run when the application is shutting down.
 @app.on_event("shutdown")
 async def shutdown():
     """

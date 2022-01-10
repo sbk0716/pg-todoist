@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends
 import api.interfaces.schemas.task as task_schema
-from api.db.repositories.task import TasksRepository
+from api.db.repositories.tasks import TasksRepository
 from api.dependencies.db import get_repository
 
 from api.core.logging import logger

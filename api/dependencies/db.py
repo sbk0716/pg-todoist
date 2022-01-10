@@ -13,8 +13,6 @@ POSTGRES_DB = environ.POSTGRES_DB
 
 async def get_db(request: Request):
     logger.info("execute get_db function")
-    logger.info("request.app.state._db")
-    logger.info(request.app.state._db)
     return request.app.state._db
 
 
@@ -25,15 +23,11 @@ def get_repository(repo_class: Type[BaseRepository]) -> Callable:
     logger.info("execute get_repository function")
 
     def get_repo(db: Database = Depends(get_db)) -> Type[BaseRepository]:
+        """
+        This function creates and returns a target repository class instance.
+        """
         logger.info("execute get_repo function")
-        logger.info("db")
-        logger.info(db)
-        logger.info("repo_class")
-        logger.info(repo_class)
-        logger.info("create target repository class instance")
         instance = repo_class(db)
-        logger.info("instance")
-        logger.info(instance)
         return instance
 
     return get_repo
