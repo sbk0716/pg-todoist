@@ -37,7 +37,6 @@ class TaskBase(BaseModel):
     title: Optional[str] = Field(None, example="打ち合わせ")
     detail: Optional[str] = Field(None, example="今週の金曜日の13時からT社のUさんと打ち合わせを行う。")
     # status_type: Optional[StatusType] = Field(StatusType.todo, example="1", description="TODO=1|DOING=2|PENDING=3|REVIEW=4")
-    # created_date: Optional[datetime]
 
 
 # ====================
@@ -63,8 +62,6 @@ class TaskRead(TaskBase, TaskDateTime):
     """
 
     id: int
-    # created_at: Optional[datetime]
-    # updated_at: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -81,9 +78,7 @@ class TaskDoneRead(TaskBase, TaskDateTime):
     """
 
     id: int
-    done: bool = Field(False, description="完了フラグ")
-    # created_at: Optional[datetime]
-    # updated_at: Optional[datetime]
+    done: bool = Field(False, example="false", description="完了フラグ")
 
     class Config:
         orm_mode = True
@@ -101,21 +96,6 @@ class TaskCreate(TaskBase):
     pass
 
 
-class TaskCreateResponse(TaskCreate, TaskDateTime):
-    """
-    TaskCreateResponse Class
-    This class inherits from TaskCreate.
-    Enable ORM mode to convert a DB model instance to a schema instance.
-    """
-
-    id: int
-    # created_at: Optional[datetime]
-    # updated_at: Optional[datetime]
-
-    class Config:
-        orm_mode = True
-
-
 # ====================
 # Task | Update
 # ====================
@@ -126,45 +106,3 @@ class TaskUpdate(TaskBase):
     """
 
     pass
-
-
-class TaskUpdateResponse(TaskUpdate, TaskDateTime):
-    """
-    TaskUpdateResponse Class
-    This class inherits from TaskUpdate.
-    Enable ORM mode to convert a DB model instance to a schema instance.
-    """
-
-    id: int
-    # created_at: Optional[datetime]
-    # updated_at: Optional[datetime]
-
-    class Config:
-        orm_mode = True
-
-
-# ====================
-# Task | Delete
-# ====================
-class TaskDelete(TaskBase):
-    """
-    TaskDelete Class
-    This class inherits from TaskBase.
-    """
-
-    pass
-
-
-class TaskDeleteResponse(TaskDelete, TaskDateTime):
-    """
-    TaskDeleteResponse Class
-    This class inherits from TaskDelete.
-    Enable ORM mode to convert a DB model instance to a schema instance.
-    """
-
-    id: int
-    # created_at: Optional[datetime]
-    # updated_at: Optional[datetime]
-
-    class Config:
-        orm_mode = True

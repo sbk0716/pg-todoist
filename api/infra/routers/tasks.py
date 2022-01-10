@@ -1,17 +1,13 @@
 from fastapi import APIRouter, status, Depends, HTTPException
-from typing import List, Dict, Any
+from typing import List
 from api.core.logging import logger
 from api.dependencies.db import get_repository
 from api.db.repositories.tasks import TasksRepository
-from api.domain.models.task import Task
 from api.interfaces.schemas.task import (
     TaskDoneRead,
     TaskRead,
     TaskCreate,
-    TaskCreateResponse,
     TaskUpdate,
-    TaskUpdateResponse,
-    TaskDeleteResponse,
 )
 
 router = APIRouter()
@@ -54,7 +50,7 @@ async def get_task(
 
 @router.post(
     "/",
-    response_model=TaskCreateResponse,
+    response_model=TaskRead,
     name="tasks:create_task",
     status_code=status.HTTP_201_CREATED,
 )
@@ -71,7 +67,7 @@ async def create_task(
 
 @router.put(
     "/{task_id}/",
-    response_model=TaskUpdateResponse,
+    response_model=TaskRead,
     name="tasks:update_task",
     status_code=status.HTTP_200_OK,
 )
@@ -84,13 +80,25 @@ async def update_task(
     update_task function
     """
     updated_task = await tasks_repo.update_task_by_id(task_id=task_id, task_body=task_body)
+    if updated_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
     return updated_task
 
 
-# @router.delete("/tasks/{task_id}", response_model=None)
-# async def delete_task(task_id: int, db: AsyncSession = Depends(get_db)):
-#     task = await task_crud.get_task(db, task_id=task_id)
-#     if task is None:
-#         raise HTTPException(status_code=404, detail="Task not found")
-
-#     return await task_crud.delete_task(db, original=task)
+@router.delete(
+    "/{task_id}/",
+    response_model=TaskRead,
+    name="tasks:delete_task",
+    status_code=status.HTTP_200_OK,
+)
+async def delete_task(
+    task_id: int,
+    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
+) -> TaskRead:
+    """
+    delete_task function
+    """
+    deleted_task = await tasks_repo.delete_task_by_id(task_id=task_id)
+    if deleted_task is None:
+        raise HTTPException(status_code=404, detail="Task not found")
+    return deleted_task

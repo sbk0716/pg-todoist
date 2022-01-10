@@ -20,7 +20,7 @@ def drop_all(connection):
     cursor.execute(drop_db)
 
     # DROP ROLE
-    drop_role = f"DROP ROLE root;"
+    drop_role = "DROP ROLE root;"
     cursor.execute(drop_role)
 
     cursor.close()

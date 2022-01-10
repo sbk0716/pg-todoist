@@ -11,7 +11,7 @@ DB_URL = environ.DB_URL
 POSTGRES_DB = environ.POSTGRES_DB
 
 
-async def get_db(request: Request):
+def get_db(request: Request):
     logger.info("execute get_db function")
     return request.app.state._db
 

@@ -7,10 +7,7 @@ from api.interfaces.schemas.task import (
     TaskDoneRead,
     TaskRead,
     TaskCreate,
-    TaskCreateResponse,
     TaskUpdate,
-    TaskUpdateResponse,
-    TaskDeleteResponse,
 )
 
 
@@ -92,7 +89,7 @@ class TasksRepository(BaseRepository):
             logger.error("--- [ERROR] ---")
             raise e
 
-    async def update_task_by_id(self, task_id: int, task_body: TaskCreate) -> TaskRead:
+    async def update_task_by_id(self, task_id: int, task_body: TaskUpdate) -> TaskRead:
         """
         update_task_by_id method
         """
@@ -108,6 +105,28 @@ class TasksRepository(BaseRepository):
             updated_params = task.copy(update=update_data)
             query_values = updated_params.dict()
             task = await self.db.fetch_one(query=query.UPDATE_TASK_BY_ID_QUERY, values=query_values)
+            logger.info("[databases.backends.postgres.Record]")
+            logger.info(dict(task.items()))
+            task = TaskRead(**task)
+            return task
+        except Exception as e:
+            logger.error("--- [ERROR] ---")
+            logger.error(e)
+            logger.error("--- [ERROR] ---")
+            raise e
+
+    async def delete_task_by_id(self, task_id: int) -> TaskRead:
+        """
+        delete_task_by_id method
+        """
+        logger.info("execute delete_task_by_id method")
+        try:
+            task = await self.get_task_by_id(task_id=task_id)
+            if task is None:
+                return None
+            task = await self.db.fetch_one(
+                query=query.DELETE_TASK_BY_ID_QUERY, values={"id": task_id}
+            )
             logger.info("[databases.backends.postgres.Record]")
             logger.info(dict(task.items()))
             task = TaskRead(**task)

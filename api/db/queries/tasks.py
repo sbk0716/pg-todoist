@@ -35,3 +35,10 @@ UPDATE_TASK_BY_ID_QUERY = """
     WHERE id = :id
     RETURNING id, title, detail, created_at, updated_at;
 """
+
+# DELETE
+DELETE_TASK_BY_ID_QUERY = """
+    DELETE FROM tasks
+    WHERE id = :id
+    RETURNING id, title, detail, created_at, updated_at;
+"""
