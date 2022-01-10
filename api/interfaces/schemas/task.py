@@ -37,22 +37,53 @@ class TaskBase(BaseModel):
     title: Optional[str] = Field(None, example="打ち合わせ")
     detail: Optional[str] = Field(None, example="今週の金曜日の13時からT社のUさんと打ち合わせを行う。")
     # status_type: Optional[StatusType] = Field(StatusType.todo, example="1", description="TODO=1|DOING=2|PENDING=3|REVIEW=4")
+    # created_date: Optional[datetime]
+
+
+# ====================
+# TaskDateTime
+# ====================
+class TaskDateTime(BaseModel):
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+
+    @validator("created_at", "updated_at", pre=True)
+    def default_datetime(cls, value: datetime) -> datetime:
+        return value or datetime.datetime.now(JST)
 
 
 # ====================
 # Task | Read
 # ====================
-class TaskRead(TaskBase):
+class TaskRead(TaskBase, TaskDateTime):
     """
-    TaskRead Class
+    TaskDoneRead Class
+    This class inherits from TaskBase.
+    Enable ORM mode to convert a DB model instance to a schema instance.
+    """
+
+    id: int
+    # created_at: Optional[datetime]
+    # updated_at: Optional[datetime]
+
+    class Config:
+        orm_mode = True
+
+
+# ====================
+# TaskDone | Read
+# ====================
+class TaskDoneRead(TaskBase, TaskDateTime):
+    """
+    TaskDoneRead Class
     This class inherits from TaskBase.
     Enable ORM mode to convert a DB model instance to a schema instance.
     """
 
     id: int
     done: bool = Field(False, description="完了フラグ")
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    # created_at: Optional[datetime]
+    # updated_at: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -70,7 +101,7 @@ class TaskCreate(TaskBase):
     pass
 
 
-class TaskCreateResponse(TaskCreate):
+class TaskCreateResponse(TaskCreate, TaskDateTime):
     """
     TaskCreateResponse Class
     This class inherits from TaskCreate.
@@ -78,8 +109,8 @@ class TaskCreateResponse(TaskCreate):
     """
 
     id: int
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    # created_at: Optional[datetime]
+    # updated_at: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -97,7 +128,7 @@ class TaskUpdate(TaskBase):
     pass
 
 
-class TaskUpdateResponse(TaskUpdate):
+class TaskUpdateResponse(TaskUpdate, TaskDateTime):
     """
     TaskUpdateResponse Class
     This class inherits from TaskUpdate.
@@ -105,8 +136,8 @@ class TaskUpdateResponse(TaskUpdate):
     """
 
     id: int
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    # created_at: Optional[datetime]
+    # updated_at: Optional[datetime]
 
     class Config:
         orm_mode = True
@@ -124,7 +155,7 @@ class TaskDelete(TaskBase):
     pass
 
 
-class TaskDeleteResponse(TaskDelete):
+class TaskDeleteResponse(TaskDelete, TaskDateTime):
     """
     TaskDeleteResponse Class
     This class inherits from TaskDelete.
@@ -132,8 +163,8 @@ class TaskDeleteResponse(TaskDelete):
     """
 
     id: int
-    created_at: Optional[datetime]
-    updated_at: Optional[datetime]
+    # created_at: Optional[datetime]
+    # updated_at: Optional[datetime]
 
     class Config:
         orm_mode = True

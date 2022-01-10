@@ -33,6 +33,7 @@ services:
     # Named volumes and paths on the host mapped to paths in the container
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
     # Ports that will be exposed to the host
     ports:
       - 15432:5432              # Connect port 15432 on your local PC to port 5432 on the docker container

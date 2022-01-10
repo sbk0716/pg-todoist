@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Enum, ForeignKey, TIMESTAMP, text
+from sqlalchemy import Column, Integer, String, Enum, ForeignKey, TIMESTAMP, DateTime, text
 from sqlalchemy.sql.functions import current_timestamp
 from datetime import datetime, timedelta, timezone
 from pydantic import BaseModel, validator
+from sqlalchemy.sql import func
 
 # Import relationship function
 from sqlalchemy.orm import relationship
@@ -39,6 +40,7 @@ class Task(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(1024), nullable=False)
     detail = Column(String(4096), nullable=False)
+    # created_date = Column("created_date", DateTime, default=func.now(), nullable=True)
     # status_type = Column("status_type", Enum(StatusType), nullable=False)
     created_at = Column(
         "created_at",
@@ -66,7 +68,7 @@ class Task(Base):
     # )
 
     # ================================================================================
-    # Execute relationship function | sqlalchemy.orm.relationship()
+    # execute relationship function | sqlalchemy.orm.relationship()
     # ================================================================================
     # Provide a relationship between two mapped classes.
     # Allows Task object references from Done object.
@@ -110,7 +112,7 @@ class Done(Base):
     # )
 
     # ================================================================================
-    # Execute relationship function | sqlalchemy.orm.relationship()
+    # execute relationship function | sqlalchemy.orm.relationship()
     # ================================================================================
     # Provide a relationship between two mapped classes.
     # Allows Done object references from Task object.

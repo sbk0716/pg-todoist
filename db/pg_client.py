@@ -9,7 +9,6 @@ POSTGRES_SERVER = config("POSTGRES_SERVER", cast=str, default="app-db")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 DB_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{DEFAULT_POSTGRES_DB}"
 TEST_DB = "testdb"
-CORE_DB = "coredb"
 
 
 def drop_all(connection):
@@ -40,10 +39,7 @@ def create_all(connection):
     cursor.execute(create_role)
 
     # ALTER DATABASE
-    alter_db = f"""
-        ALTER DATABASE {TEST_DB} SET timezone TO 'Asia/Tokyo';
-        ALTER DATABASE {CORE_DB} SET timezone TO 'Asia/Tokyo';
-    """
+    alter_db = f"ALTER DATABASE {TEST_DB} SET timezone TO 'Asia/Tokyo';"
     cursor.execute(alter_db)
 
     # SHOW DATABASES
@@ -73,9 +69,9 @@ if __name__ == "__main__":
     # Connect to database.
     connection = psycopg2.connect(DB_URL)
     connection.autocommit = True
-    # Execute drop_all function.
+    # execute drop_all function.
     drop_all(connection)
-    # Execute create_all function.
+    # execute create_all function.
     create_all(connection)
     # Close connection.
     connection.close()
