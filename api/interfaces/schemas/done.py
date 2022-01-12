@@ -1,39 +1,45 @@
-# Import pydantic
-# https://pydantic-docs.helpmanual.io/
-from pydantic import BaseModel, Field
-
-# Import typing
-# https://docs.python.org/3/library/typing.html
+from pydantic import BaseModel, Field, validator
 from typing import Optional
+from datetime import datetime, timedelta, timezone
 
+JST = timezone(timedelta(hours=+9), "JST")
 
 # ====================
-# Done | Create
+# DoneBase
 # ====================
-class DoneCreateResponse(BaseModel):
+class DoneBase(BaseModel):
     """
-    DoneCreateResponse Class
-    This class inherits from BaseModel.
+    DoneBase Class
+    This class inherits from Pydantic BaseModel.
+    """
+
+    pass
+
+
+# ====================
+# DoneDateTime
+# ====================
+class DoneDateTime(BaseModel):
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
+
+    @validator("created_at", "updated_at", pre=True)
+    def default_datetime(cls, value: datetime) -> datetime:
+        return value or datetime.datetime.now(JST)
+
+
+# ====================
+# DoneRead | Read
+# ====================
+class DoneRead(DoneBase, DoneDateTime):
+    """
+    DoneRead Class
+    This class inherits from TaskBase.
     Enable ORM mode to convert a DB model instance to a schema instance.
     """
 
-    message: Optional[str] = Field(None, example="create_done | ID: 1")
-
-    class Config:
-        orm_mode = True
-
-
-# ====================
-# Done | Delete
-# ====================
-class DoneDeleteResponse(BaseModel):
-    """
-    DoneDeleteResponse Class
-    This class inherits from BaseModel.
-    Enable ORM mode to convert a DB model instance to a schema instance.
-    """
-
-    message: Optional[str] = Field(None, example="delete_done | ID: 1")
+    id: int
+    note: Optional[str] = Field(None, example="Record created by create_done method | ID: 1")
 
     class Config:
         orm_mode = True
