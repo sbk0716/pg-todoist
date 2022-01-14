@@ -77,7 +77,12 @@ class Done(Base):
     __tablename__ = "dones"
 
     # PK&FK: Defines a dependency between two columns.(tasks.id <--> dones.id)
-    id = Column(Integer, ForeignKey("tasks.id"), primary_key=True, autoincrement=False)
+    id = Column(
+        Integer,
+        ForeignKey("tasks.id", onupdate="CASCADE", ondelete="CASCADE"),
+        primary_key=True,
+        autoincrement=False,
+    )
     note = Column(String(4096), nullable=False)
     created_at = Column(
         "created_at",

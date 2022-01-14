@@ -85,11 +85,11 @@ async def test_done_flag(async_client):
     assert response_obj["title"] == "テストタスク2"
 
     # 完了フラグを立てる
-    response = await async_client.put("/tasks/1/done")
+    response = await async_client.post("/tasks/1/done")
     assert response.status_code == starlette.status.HTTP_200_OK
 
     # 既に完了フラグが立っているので400を返却
-    response = await async_client.put("/tasks/1/done")
+    response = await async_client.post("/tasks/1/done")
     assert response.status_code == starlette.status.HTTP_400_BAD_REQUEST
 
     # 完了フラグを外す
