@@ -9,7 +9,11 @@ POSTGRES_DB = environ.POSTGRES_DB
 
 async def connect_to_db(app: FastAPI) -> None:
     """
-    Connect to the database
+    Establish the connection pool.
+    Set the connection pool to `Starlette State instance`.
+    [Starlette State]
+    An object that can be used to store arbitrary state.
+    Used for `request.state` and `app.state`.
     """
     try:
         logger.info(f"--- [CONNECT][POSTGRES_DB: {POSTGRES_DB}] ---")

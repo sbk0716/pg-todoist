@@ -11,21 +11,23 @@ POSTGRES_DB = environ.POSTGRES_DB
 
 
 def get_db(request: Request):
-    logger.info("execute get_db function")
+    """
+    Get the connection pool from `Starlette State instance`.
+    `connect_to_db function` set the connection pool to `Starlette State instance`.
+    """
     return request.app.state._db
 
 
 def get_repository(repo_class: Type[BaseRepository]) -> Callable:
     """
-    Return get_repo function.
+    Return `get_repo` function.
+    `get_repo` function returns the target repository class instance that set the connection pool.
     """
-    logger.info("execute get_repository function")
 
     def get_repo(db: Database = Depends(get_db)) -> Type[BaseRepository]:
         """
-        This function creates and returns a target repository class instance.
+        Returns the target repository class instance that set the connection pool.
         """
-        logger.info("execute get_repo function")
         instance = repo_class(db)
         return instance
 

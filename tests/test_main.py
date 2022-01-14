@@ -1,6 +1,7 @@
 import pytest
 from httpx import AsyncClient
 from sqlalchemy import create_engine
+
 # from sqlalchemy.ext.asyncio import create_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from starlette.requests import Request
@@ -15,14 +16,18 @@ DB_URL = environ.DB_URL
 POSTGRES_DB = environ.POSTGRES_DB
 print(f"POSTGRES_DB: {POSTGRES_DB}")
 
-# ?ASYNC_DB_URL = "sqlite+aiosqlite:///:memory"
+# ASYNC_DB_URL = "sqlite+aiosqlite:///:memory"
 
 
 @pytest.fixture
 async def app() -> FastAPI:
     from api.main import app
+
+    print("###### execute connect_to_db ######")
     await connect_to_db(app)
+    print(app.state._db)
     return app
+
 
 # @pytest.fixture
 # def db(app: FastAPI) -> Database:
