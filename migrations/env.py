@@ -8,7 +8,7 @@ from alembic import context
 from api.core import environ
 from api.domain.models.task import Base
 
-DB_URL = environ.DB_URL
+DB_URL_STR = environ.DB_URL_STR
 POSTGRES_DB = environ.POSTGRES_DB
 print(f"POSTGRES_DB: {POSTGRES_DB}")
 
@@ -41,7 +41,7 @@ target_metadata = Base.metadata
 # set_main_option: Set an option programmatically within the ‘main’ section.
 # sqlalchemy.url - A URL to connect to the database via SQLAlchemy.
 # https://alembic.sqlalchemy.org/en/latest/api/config.html?highlight=set_main_option#alembic.config.Config.set_main_option
-config.set_main_option("sqlalchemy.url", str(DB_URL))
+config.set_main_option("sqlalchemy.url", str(DB_URL_STR))
 
 
 def run_migrations_offline():

@@ -23,8 +23,4 @@ else:
 
 DB_URL_STR = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
 
-DB_URL = config(
-    "DB_URL",
-    cast=DatabaseURL,
-    default=f"{DB_URL_STR}"
-)
+DB_URL = config("DB_URL", cast=DatabaseURL, default=f"{DB_URL_STR}")
