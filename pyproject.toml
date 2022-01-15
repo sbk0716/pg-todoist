@@ -11,6 +11,7 @@ uvicorn = {extras = ["standard"], version = "^0.16.0"}
 SQLAlchemy = "^1.4.28"
 databases = "^0.5.3"
 asyncpg = "^0.25.0"
+alembic = "^1.7.5"
 
 [tool.poetry.dev-dependencies]
 pytest-asyncio = "^0.16.0"
