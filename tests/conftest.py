@@ -7,7 +7,7 @@ from api.core import environ
 from api.domain.models.task import Base
 from api.infra.db.connection import connect_to_db
 
-DB_URL = environ.DB_URL
+DB_URL_STR = environ.DB_URL_STR
 POSTGRES_DB = environ.POSTGRES_DB
 print(f"POSTGRES_DB: {POSTGRES_DB}")
 
@@ -34,7 +34,7 @@ async def app() -> FastAPI:
 
 @pytest.fixture
 async def async_client(app: FastAPI) -> AsyncClient:
-    engine = create_engine(DB_URL, echo=True)
+    engine = create_engine(DB_URL_STR, echo=True)
     # ================================================================================
     # Execute drop_all method | sqlalchemy.schema.MetaData.drop_all()
     # ================================================================================

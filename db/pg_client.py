@@ -48,16 +48,20 @@ def create_all(connection):
     print("==================================================")
     print("1. SELECT datname, datdba, encoding, datcollate, datctype from pg_database")
     print("==================================================")
+    print("(datname, datdba, encoding, datcollate, datctype)")
+    print("--------------------------------------------------")
     for row in rows:
         print(row)
     print("==================================================")
 
     # SHOW DATABASES
-    cursor.execute("SELECT * FROM pg_user;")
+    cursor.execute("SELECT usename, usesysid, usecreatedb, usesuper, passwd FROM pg_user;")
     rows = cursor.fetchall()
     print("==================================================")
-    print("2. SELECT * FROM pg_user")
+    print("2. SELECT usename, usesysid, usecreatedb, usesuper, passwd FROM pg_user")
     print("==================================================")
+    print("(usename, usesysid, usecreatedb, usesuper, passwd)")
+    print("--------------------------------------------------")
     for row in rows:
         print(row)
     print("==================================================")
