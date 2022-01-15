@@ -16,28 +16,28 @@ This app is able to use below function.
 
 ## (2)Project Structure
 ```sh
-admin@gw-mac fast-todo % tree -d
+admin@gw-mac simple-fastapi % tree -d
 .
 ├── api
+│   ├── core
+│   ├── dependencies
 │   ├── domain
 │   │   └── models
 │   ├── infra
-│   │   ├── config
 │   │   ├── db
 │   │   └── routers
-│   ├── interfaces
-│   │   ├── controllers
-│   │   ├── db
-│   │   │   └── repositories
-│   │   └── schemas
-│   └── usecases
+│   └── interfaces
+│       ├── db
+│       │   ├── queries
+│       │   └── repositories
+│       └── schemas
 ├── db
 ├── migrations
 │   └── versions
 └── tests
 
 17 directories
-admin@gw-mac fast-todo % 
+admin@gw-mac simple-fastapi % 
 ```
 
 
@@ -294,10 +294,12 @@ admin@gw-mac fast-todo %
 ## (1)set up postgresql
 ```sh
 admin@gw-mac simple-fastapi % docker-compose exec app-api /bin/bash
-root@bd6bc0f7ab71:/src# python db/pg_client.py 
+root@82aa92de72bf:/src# python db/pg_client.py
 ==================================================
 1. SELECT datname, datdba, encoding, datcollate, datctype from pg_database
 ==================================================
+(datname, datdba, encoding, datcollate, datctype)
+--------------------------------------------------
 ('postgres', 10, 6, 'C', 'C')
 ('coredb', 10, 6, 'C', 'C')
 ('template1', 10, 6, 'C', 'C')
@@ -305,42 +307,42 @@ root@bd6bc0f7ab71:/src# python db/pg_client.py
 ('testdb', 10, 6, 'C', 'C')
 ==================================================
 ==================================================
-2. SELECT * FROM pg_user
+2. SELECT usename, usesysid, usecreatedb, usesuper, passwd FROM pg_user
 ==================================================
-('admin', 10, True, True, True, True, '********', None, None)
-('root', 67172, False, True, False, False, '********', None, None)
+(usename, usesysid, usecreatedb, usesuper, passwd)
+--------------------------------------------------
+('admin', 10, True, True, '********')
+('root', 67260, False, True, '********')
 ==================================================
-root@bd6bc0f7ab71:/src# 
+root@82aa92de72bf:/src# 
 ```
-
 
 ## (2)migratation for test db
 ```sh
 admin@gw-mac fast-todo % docker-compose exec app-api /bin/bash
-root@8025b42a4ce1:/src# export ENV=test
-root@8025b42a4ce1:/src# printenv | grep ENV
+root@82aa92de72bf:/src# export ENV=test
+root@82aa92de72bf:/src# printenv | grep ENV
 ENV=test
-root@8025b42a4ce1:/src# poetry run alembic current
-MYSQL_DATABASE: testdb
+root@82aa92de72bf:/src# poetry run alembic current
+POSTGRES_DB: testdb
 execute run_migrations_online
-INFO  [alembic.runtime.migration] Context impl MySQLImpl.
-INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
-root@8025b42a4ce1:/src# 
-root@8025b42a4ce1:/src# poetry run alembic upgrade head
-MYSQL_DATABASE: testdb
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+root@82aa92de72bf:/src# 
+root@82aa92de72bf:/src# poetry run alembic upgrade head
+POSTGRES_DB: testdb
 execute run_migrations_online
-INFO  [alembic.runtime.migration] Context impl MySQLImpl.
-INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
-INFO  [alembic.runtime.migration] Running upgrade  -> 876ff25eef57, create_tasks_and_dones_table
-INFO  [alembic.runtime.migration] Running upgrade 876ff25eef57 -> 2b699da13ffa, update tasks column
-root@8025b42a4ce1:/src# 
-root@8025b42a4ce1:/src# poetry run alembic current
-MYSQL_DATABASE: testdb
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> e5cc805f99e4, 1_create_tasks_and_dones_table
+root@82aa92de72bf:/src# 
+root@82aa92de72bf:/src# poetry run alembic current
+POSTGRES_DB: testdb
 execute run_migrations_online
-INFO  [alembic.runtime.migration] Context impl MySQLImpl.
-INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
-2b699da13ffa (head)
-root@8025b42a4ce1:/src# 
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+e5cc805f99e4 (head)
+root@82aa92de72bf:/src# 
 ```
 
 
@@ -371,57 +373,62 @@ root@aef0a7ee5af8:/src#
 
 ## (5)poetry run pytest
 ```sh
-root@aef0a7ee5af8:/src# export ENV=test
-root@aef0a7ee5af8:/src# printenv | grep ENV
-ENV=test
-root@aef0a7ee5af8:/src# 
-root@aef0a7ee5af8:/src# poetry run pytest --cov=.
-============================================== test session starts ==============================================
-platform linux -- Python 3.9.9, pytest-6.2.5, py-1.11.0, pluggy-1.0.0
-rootdir: /src
+root@82aa92de72bf:/src# poetry run pytest -v --cov=.
+========================================= test session starts ==========================================
+platform linux -- Python 3.9.9, pytest-6.2.5, py-1.11.0, pluggy-1.0.0 -- /src/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /src, configfile: pyproject.toml, testpaths: tests
 plugins: anyio-3.4.0, asyncio-0.16.0, cov-3.0.0
-collected 2 items                                                                                               
+collected 6 items                                                                                      
 
-tests/test_main.py ..                                                                                     [100%]
+tests/test_dones.py::TestCrudDones::test_done_flag PASSED                                        [ 16%]
+tests/test_health.py::TestHealth::test_health_check PASSED                                       [ 33%]
+tests/test_tasks.py::TestCrudTasks::test_create_task_and_read_task PASSED                        [ 50%]
+tests/test_tasks.py::TestCrudTasks::test_create_task_and_update_task PASSED                      [ 66%]
+tests/test_tasks.py::TestCrudTasks::test_create_task_and_delete_task PASSED                      [ 83%]
+tests/test_tasks.py::TestCrudTasks::test_create_all_task_and_read_all_task PASSED                [100%]
 
 ----------- coverage: platform linux, python 3.9.9-final-0 -----------
-Name                                               Stmts   Miss  Cover
-----------------------------------------------------------------------
-api/__init__.py                                        0      0   100%
-api/application/__init__.py                            0      0   100%
-api/application/usecases/__init__.py                   0      0   100%
-api/application/usecases/done.py                      26     16    38%
-api/application/usecases/task.py                      34     19    44%
-api/domain/__init__.py                                 0      0   100%
-api/domain/models/__init__.py                          0      0   100%
-api/domain/models/task.py                             18      0   100%
-api/infra/__init__.py                                  0      0   100%
-api/infra/config.py                                   19      1    95%
-api/infra/controllers/__init__.py                      0      0   100%
-api/infra/controllers/done.py                          7      0   100%
-api/infra/controllers/task.py                         15      3    80%
-api/infra/database/__init__.py                         0      0   100%
-api/infra/database/connection.py                      22     11    50%
-api/infra/database/migration.py                       12     12     0%
-api/infra/logging.py                                   3      0   100%
-api/infra/main.py                                     11      0   100%
-api/infra/routers/__init__.py                          6      0   100%
-api/infra/routers/done.py                             15      0   100%
-api/infra/routers/task.py                             29      6    79%
-api/infra/schemas/__init__.py                          0      0   100%
-api/infra/schemas/done.py                             10      0   100%
-api/infra/schemas/task.py                             41      0   100%
-api/interfaces/__init__.py                             0      0   100%
-api/interfaces/database/__init__.py                    0      0   100%
-api/interfaces/database/repositories/__init__.py       0      0   100%
-api/interfaces/database/repositories/done.py          51     31    39%
-api/interfaces/database/repositories/task.py          93     66    29%
-tests/__init__.py                                      0      0   100%
-tests/test_main.py                                    82     14    83%
-----------------------------------------------------------------------
-TOTAL                                                494    179    64%
+Name                                         Stmts   Miss  Cover
+----------------------------------------------------------------
+api/__init__.py                                  0      0   100%
+api/core/__init__.py                             0      0   100%
+api/core/environ.py                             18      1    94%
+api/core/logging.py                              3      0   100%
+api/dependencies/__init__.py                     0      0   100%
+api/dependencies/db.py                          16      0   100%
+api/domain/__init__.py                           0      0   100%
+api/domain/models/__init__.py                    0      0   100%
+api/domain/models/task.py                       29      0   100%
+api/infra/__init__.py                            0      0   100%
+api/infra/db/__init__.py                         0      0   100%
+api/infra/db/connection.py                      25     12    52%
+api/infra/routers/__init__.py                    8      0   100%
+api/infra/routers/dones.py                      27      4    85%
+api/infra/routers/health.py                      6      0   100%
+api/infra/routers/tasks.py                      34      4    88%
+api/interfaces/__init__.py                       0      0   100%
+api/interfaces/db/__init__.py                    0      0   100%
+api/interfaces/db/queries/__init__.py            0      0   100%
+api/interfaces/db/queries/dones.py               3      0   100%
+api/interfaces/db/queries/tasks.py               6      0   100%
+api/interfaces/db/repositories/__init__.py       0      0   100%
+api/interfaces/db/repositories/base.py           4      0   100%
+api/interfaces/db/repositories/dones.py         49     15    69%
+api/interfaces/db/repositories/tasks.py        101     35    65%
+api/interfaces/schemas/__init__.py               0      0   100%
+api/interfaces/schemas/done.py                  17      0   100%
+api/interfaces/schemas/task.py                  32      0   100%
+api/main.py                                     15      2    87%
+tests/__init__.py                                0      0   100%
+tests/conftest.py                               39     10    74%
+tests/test_dones.py                             20      0   100%
+tests/test_health.py                            11      0   100%
+tests/test_tasks.py                             90      0   100%
+----------------------------------------------------------------
+TOTAL                                          553     83    85%
 
 
-============================================== 2 passed in 12.50s ===============================================
-root@16203242c0e9:/src# 
+========================================== 6 passed in 37.79s ==========================================
+root@82aa92de72bf:/src# 
 ```
