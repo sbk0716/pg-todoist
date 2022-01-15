@@ -11,9 +11,11 @@ DB_URL = environ.DB_URL
 POSTGRES_DB = environ.POSTGRES_DB
 print(f"POSTGRES_DB: {POSTGRES_DB}")
 
+
 @pytest.fixture
 async def app() -> FastAPI:
     from api.main import app
+
     try:
         print("###### Set the connection pool to `app.state._db` ######")
         await connect_to_db(app)
@@ -23,6 +25,7 @@ async def app() -> FastAPI:
         print(e)
         print("--- [ERROR]connect_to_db ---")
         raise e
+
 
 # @pytest.fixture
 # def db(app: FastAPI) -> Database:

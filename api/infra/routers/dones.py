@@ -38,7 +38,7 @@ async def mark_task_as_done(
     "/{task_id}/done/",
     response_model=DoneRead,
     name="tasks:unmark_task_as_done",
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
 )
 async def unmark_task_as_done(
     task_id: int,
