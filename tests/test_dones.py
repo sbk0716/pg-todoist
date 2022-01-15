@@ -9,12 +9,13 @@ class TestCrudDones:
     async def test_done_flag(self, async_client: AsyncClient):
         print("###### execute test_done_flag ######")
         response = await async_client.post(
-            "/api/tasks/", json={"title": "テストタスク2", "detail": "テストタスク2詳細"}
+            "/api/tasks/", json={"title": "テストタスク2", "detail": "テストタスク2詳細", "status_type": 1}
         )
         assert response.status_code == starlette.status.HTTP_201_CREATED
         response_obj = response.json()
         assert response_obj["title"] == "テストタスク2"
         assert response_obj["detail"] == "テストタスク2詳細"
+        assert response_obj["status_type"] == 1
 
         response = await async_client.post("/api/tasks/1/done/")
         assert response.status_code == starlette.status.HTTP_201_CREATED

@@ -21,17 +21,20 @@ class TestCrudTasks:
         post_param = {
             "title": test_data["title"],
             "detail": test_data["detail"],
+            "status_type": test_data["status_type"],
         }
         post_resp = await async_client.post("/api/tasks/", json=post_param)
         assert post_resp.status_code == starlette.status.HTTP_201_CREATED
         post_resp_obj = post_resp.json()
         assert post_resp_obj["title"] == test_data["title"]
         assert post_resp_obj["detail"] == test_data["detail"]
+        assert post_resp_obj["status_type"] == test_data["status_type"]
         get_resp = await async_client.get("/api/tasks/1/")
         assert get_resp.status_code == starlette.status.HTTP_200_OK
         get_resp_obj = get_resp.json()
         assert get_resp_obj["title"] == test_data["title"]
         assert get_resp_obj["detail"] == test_data["detail"]
+        assert get_resp_obj["status_type"] == test_data["status_type"]
         assert get_resp_obj["done"] is False
 
     async def test_create_task_and_update_task(self, async_client: AsyncClient):
@@ -42,22 +45,26 @@ class TestCrudTasks:
         post_param = {
             "title": test_data["title"],
             "detail": test_data["detail"],
+            "status_type": test_data["status_type"],
         }
         post_resp = await async_client.post("/api/tasks/", json=post_param)
         assert post_resp.status_code == starlette.status.HTTP_201_CREATED
         post_resp_obj = post_resp.json()
         assert post_resp_obj["title"] == test_data["title"]
         assert post_resp_obj["detail"] == test_data["detail"]
+        assert post_resp_obj["status_type"] == test_data["status_type"]
 
         put_param = {
             "title": "[UPDATE]テストタスク1",
             "detail": "[UPDATE]テストタスク1詳細",
+            "status_type": 2,
         }
         put_resp = await async_client.put("/api/tasks/1/", json=put_param)
         assert put_resp.status_code == starlette.status.HTTP_200_OK
         put_resp_obj = put_resp.json()
         assert put_resp_obj["title"] == "[UPDATE]テストタスク1"
         assert put_resp_obj["detail"] == "[UPDATE]テストタスク1詳細"
+        assert put_resp_obj["status_type"] == 2
 
     async def test_create_task_and_delete_task(self, async_client: AsyncClient):
         print("###### execute test_create_task_and_delete_task ######")
@@ -67,18 +74,21 @@ class TestCrudTasks:
         post_param = {
             "title": test_data["title"],
             "detail": test_data["detail"],
+            "status_type": test_data["status_type"],
         }
         post_resp = await async_client.post("/api/tasks/", json=post_param)
         assert post_resp.status_code == starlette.status.HTTP_201_CREATED
         post_resp_obj = post_resp.json()
         assert post_resp_obj["title"] == test_data["title"]
         assert post_resp_obj["detail"] == test_data["detail"]
+        assert post_resp_obj["status_type"] == test_data["status_type"]
 
         delete_resp = await async_client.delete("/api/tasks/1/")
         assert delete_resp.status_code == starlette.status.HTTP_200_OK
         delete_resp_obj = delete_resp.json()
         assert delete_resp_obj["title"] == test_data["title"]
         assert delete_resp_obj["detail"] == test_data["detail"]
+        assert delete_resp_obj["status_type"] == test_data["status_type"]
 
     async def test_create_all_task_and_read_all_task(self, async_client: AsyncClient):
         print("###### execute test_create_all_task_and_read_all_task ######")
@@ -88,18 +98,21 @@ class TestCrudTasks:
             post_param = {
                 "title": test_data["title"],
                 "detail": test_data["detail"],
+                "status_type": test_data["status_type"],
             }
             post_resp = await async_client.post("/api/tasks/", json=post_param)
             assert post_resp.status_code == starlette.status.HTTP_201_CREATED
             post_resp_obj = post_resp.json()
             assert post_resp_obj["title"] == test_data["title"]
             assert post_resp_obj["detail"] == test_data["detail"]
+            assert post_resp_obj["status_type"] == test_data["status_type"]
 
             get_resp = await async_client.get(f"/api/tasks/{i+1}/")
             assert get_resp.status_code == starlette.status.HTTP_200_OK
             get_resp_obj = get_resp.json()
             assert get_resp_obj["title"] == test_data["title"]
             assert get_resp_obj["detail"] == test_data["detail"]
+            assert get_resp_obj["status_type"] == test_data["status_type"]
             assert get_resp_obj["done"] is False
 
         get_all_resp = await async_client.get("/api/tasks/")
@@ -114,4 +127,5 @@ class TestCrudTasks:
             test_data = test_data_list[i]
             assert response_obj["title"] == test_data["title"]
             assert response_obj["detail"] == test_data["detail"]
+            assert response_obj["status_type"] == test_data["status_type"]
             assert response_obj["done"] is False

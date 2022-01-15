@@ -26,6 +26,8 @@ class TasksRepository(BaseRepository):
         logger.info("execute create_task method")
         try:
             query_values = task_body.dict()
+            status_type_value = task_body.status_type.value
+            query_values["status_type"] = status_type_value
             task = await self.db.fetch_one(query=CREATE_TASK_QUERY, values=query_values)
             logger.info("[databases.backends.postgres.Record]")
             logger.info(dict(task.items()))
@@ -45,7 +47,10 @@ class TasksRepository(BaseRepository):
         try:
             task_list = await self.db.fetch_all(query=GET_ALL_TASK_WITH_DONE_QUERY)
             if len(task_list) != 0:
-                task_read_list: List[TaskDoneRead] = [TaskDoneRead(**task) for task in task_list]
+                # databases.backends.postgres.Record -> dict
+                dict_task_list = [dict(task) for task in task_list]
+                sorted_list = sorted(dict_task_list, key=lambda x: x["updated_at"], reverse=True)
+                task_read_list: List[TaskDoneRead] = [TaskDoneRead(**task) for task in sorted_list]
                 return task_read_list
             else:
                 return task_list
@@ -108,6 +113,8 @@ class TasksRepository(BaseRepository):
             update_data = task_body.dict(exclude_unset=True)
             dt_now_utc = datetime.now(timezone.utc)
             update_data["updated_at"] = dt_now_utc
+            status_type_value = task_body.status_type.value
+            update_data["status_type"] = status_type_value
             # execute pydantic BaseModel.copy method
             updated_params = task.copy(update=update_data)
             query_values = updated_params.dict()

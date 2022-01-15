@@ -31,7 +31,9 @@ class TaskBase(BaseModel):
 
     title: Optional[str] = Field(None, example="打ち合わせ")
     detail: Optional[str] = Field(None, example="今週の金曜日の13時からT社のUさんと打ち合わせを行う。")
-    # status_type: Optional[StatusType] = Field(StatusType.todo, example="1", description="TODO=1|DOING=2|PENDING=3|REVIEW=4")
+    status_type: Optional[StatusType] = Field(
+        StatusType.todo, example="1", description="TODO=1|DOING=2|PENDING=3|REVIEW=4"
+    )
 
 
 # ====================
