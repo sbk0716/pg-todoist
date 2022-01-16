@@ -96,6 +96,9 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
     strategy:
       fail-fast: false
       matrix:
@@ -139,9 +142,8 @@ jobs:
 
     - name: 'Setup PostgreSQL service container'
       run: |
-        ls -la
-        psql --host localhost --username postgres --dbname postgres --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
-        psql --host localhost --username postgres --dbname postgres --command 'SELECT usename, usesysid, usecreatedb, usesuper;,
+        psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
+        psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;,
         printenv | grep ENV
         python db/pg_client.py
       env:
