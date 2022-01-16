@@ -1,6 +1,11 @@
 name: 'Python CI'
 
 on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
   pull_request:
     types: [opened, edited]
     branches:
