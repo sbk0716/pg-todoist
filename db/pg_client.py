@@ -14,7 +14,9 @@ POSTGRES_HOST = config("POSTGRES_HOST", cast=str, default="app-db")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 DB_URL_STR = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 TEST_DB = "testdb"
-
+print("++++++++++++++++++++++++++++++++++++++++")
+print(DB_URL_STR)
+print("++++++++++++++++++++++++++++++++++++++++")
 
 def drop_all(connection):
     # Generate cursor.
