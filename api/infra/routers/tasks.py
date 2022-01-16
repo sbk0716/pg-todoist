@@ -23,17 +23,14 @@ router = APIRouter()
 )
 async def list_tasks(
     request: Request,
-    user_agent: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None),
     db: Database = Depends(get_database()),
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> List[TaskDoneRead]:
     """
     list_tasks function
     """
     logger.info(f"request.headers: {request.headers}")
-    logger.info(f"user_agent: {user_agent}")
-    # Set TasksRepository to TasksController instance.
-    # tasks_controller = TasksController(tasks_repo)
+    logger.info(f"authorization: {authorization}")
     tasks_controller = TasksController(db)
     return await tasks_controller.list_tasks()
 
@@ -46,18 +43,15 @@ async def list_tasks(
 )
 async def get_task(
     request: Request,
-    user_agent: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None),
     db: Database = Depends(get_database()),
     task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> List[TaskDoneRead]:
     """
     get_task function
     """
     logger.info(f"request.headers: {request.headers}")
-    logger.info(f"user_agent: {user_agent}")
-    # Set TasksRepository to TasksController instance.
-    # tasks_controller = TasksController(tasks_repo)
+    logger.info(f"authorization: {authorization}")
     tasks_controller = TasksController(db)
     return await tasks_controller.get_task(task_id=task_id)
 
@@ -70,18 +64,15 @@ async def get_task(
 )
 async def create_task(
     request: Request,
-    user_agent: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None),
     db: Database = Depends(get_database()),
     task_body: TaskCreate = Body(...),
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> TaskRead:
     """
     create_task function
     """
     logger.info(f"request.headers: {request.headers}")
-    logger.info(f"user_agent: {user_agent}")
-    # Set TasksRepository to TasksController instance.
-    # tasks_controller = TasksController(tasks_repo)
+    logger.info(f"authorization: {authorization}")
     tasks_controller = TasksController(db)
     return await tasks_controller.create_task(task_body=task_body)
 
@@ -94,19 +85,16 @@ async def create_task(
 )
 async def update_task(
     request: Request,
-    user_agent: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None),
     db: Database = Depends(get_database()),
     task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
     task_body: TaskUpdate = Body(...),
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> TaskRead:
     """
     update_task function
     """
     logger.info(f"request.headers: {request.headers}")
-    logger.info(f"user_agent: {user_agent}")
-    # Set TasksRepository to TasksController instance.
-    # tasks_controller = TasksController(tasks_repo)
+    logger.info(f"authorization: {authorization}")
     tasks_controller = TasksController(db)
     return await tasks_controller.update_task(task_id=task_id, task_body=task_body)
 
@@ -119,17 +107,14 @@ async def update_task(
 )
 async def delete_task(
     request: Request,
-    user_agent: Optional[str] = Header(None),
+    authorization: Optional[str] = Header(None),
     db: Database = Depends(get_database()),
     task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> TaskRead:
     """
     delete_task function
     """
     logger.info(f"request.headers: {request.headers}")
-    logger.info(f"user_agent: {user_agent}")
-    # Set TasksRepository to TasksController instance.
-    # tasks_controller = TasksController(tasks_repo)
+    logger.info(f"authorization: {authorization}")
     tasks_controller = TasksController(db)
     return await tasks_controller.delete_task(task_id=task_id)

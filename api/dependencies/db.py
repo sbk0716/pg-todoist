@@ -10,9 +10,9 @@ def get_connection_pool(request: Request):
     Get the connection pool from `Starlette State instance`.
     `connect_to_db function` set the connection pool to `Starlette State instance`.
     [Note]
-    request: starlette.requests.Request
-    request.app: fastapi.applications.FastAPI
-    request.app.state: starlette.datastructures.State
+    1. request: starlette.requests.Request
+    2. request.app: fastapi.applications.FastAPI
+    3. request.app.state: starlette.datastructures.State
     """
     return request.app.state._db
 

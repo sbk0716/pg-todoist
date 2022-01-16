@@ -1,6 +1,5 @@
 from databases import Database
 from typing import List
-from api.interfaces.db.repositories.tasks import TasksRepository
 from api.usecases.tasks import TasksUsecase
 from api.interfaces.schemas.task import (
     TaskDoneRead,
@@ -11,9 +10,6 @@ from api.interfaces.schemas.task import (
 
 
 class TasksController:
-    # def __init__(self, tasks_repo: TasksRepository) -> None:
-    #     # Set TasksRepository instance to TasksController instance.
-    #     self.tasks_repo = tasks_repo
     def __init__(self, db: Database) -> None:
         self.db = db
 
@@ -21,8 +17,6 @@ class TasksController:
         """
         list_tasks function
         """
-        # Set TasksRepository instance to TasksUsecase instance.
-        # tasks_usecase = TasksUsecase(self.tasks_repo)
         tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.list_tasks()
 
@@ -30,8 +24,6 @@ class TasksController:
         """
         get_task function
         """
-        # Set TasksRepository instance to TasksUsecase instance.
-        # tasks_usecase = TasksUsecase(self.tasks_repo)
         tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.get_task(task_id=task_id)
 
@@ -39,8 +31,6 @@ class TasksController:
         """
         create_task function
         """
-        # Set TasksRepository instance to TasksUsecase instance.
-        # tasks_usecase = TasksUsecase(self.tasks_repo)
         tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.create_task(task_body=task_body)
 
@@ -48,8 +38,6 @@ class TasksController:
         """
         update_task function
         """
-        # Set TasksRepository instance to TasksUsecase instance.
-        # tasks_usecase = TasksUsecase(self.tasks_repo)
         tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.update_task(task_id=task_id, task_body=task_body)
 
@@ -57,7 +45,5 @@ class TasksController:
         """
         delete_task function
         """
-        # Set TasksRepository instance to TasksUsecase instance.
-        # tasks_usecase = TasksUsecase(self.tasks_repo)
         tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.delete_task(task_id=task_id)

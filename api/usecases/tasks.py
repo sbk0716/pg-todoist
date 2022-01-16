@@ -12,9 +12,6 @@ from api.interfaces.schemas.task import (
 
 
 class TasksUsecase:
-    # def __init__(self, tasks_repo: TasksRepository) -> None:
-    #     # Set TasksRepository instance to TasksUsecase instance.
-    #     self.tasks_repo = tasks_repo
     def __init__(self, db: Database) -> None:
         self.db = db
         self.tasks_repo = TasksRepository(db)
