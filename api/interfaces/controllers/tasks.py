@@ -1,3 +1,4 @@
+from databases import Database
 from typing import List
 from api.interfaces.db.repositories.tasks import TasksRepository
 from api.usecases.tasks import TasksUsecase
@@ -10,16 +11,19 @@ from api.interfaces.schemas.task import (
 
 
 class TasksController:
-    def __init__(self, tasks_repo: TasksRepository) -> None:
-        # Set TasksRepository instance to TasksController instance.
-        self.tasks_repo = tasks_repo
+    # def __init__(self, tasks_repo: TasksRepository) -> None:
+    #     # Set TasksRepository instance to TasksController instance.
+    #     self.tasks_repo = tasks_repo
+    def __init__(self, db: Database) -> None:
+        self.db = db
 
     async def list_tasks(self) -> List[TaskDoneRead]:
         """
         list_tasks function
         """
         # Set TasksRepository instance to TasksUsecase instance.
-        tasks_usecase = TasksUsecase(self.tasks_repo)
+        # tasks_usecase = TasksUsecase(self.tasks_repo)
+        tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.list_tasks()
 
     async def get_task(self, task_id: int) -> List[TaskDoneRead]:
@@ -27,7 +31,8 @@ class TasksController:
         get_task function
         """
         # Set TasksRepository instance to TasksUsecase instance.
-        tasks_usecase = TasksUsecase(self.tasks_repo)
+        # tasks_usecase = TasksUsecase(self.tasks_repo)
+        tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.get_task(task_id=task_id)
 
     async def create_task(self, task_body: TaskCreate) -> TaskRead:
@@ -35,7 +40,8 @@ class TasksController:
         create_task function
         """
         # Set TasksRepository instance to TasksUsecase instance.
-        tasks_usecase = TasksUsecase(self.tasks_repo)
+        # tasks_usecase = TasksUsecase(self.tasks_repo)
+        tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.create_task(task_body=task_body)
 
     async def update_task(self, task_id: int, task_body: TaskUpdate) -> TaskRead:
@@ -43,7 +49,8 @@ class TasksController:
         update_task function
         """
         # Set TasksRepository instance to TasksUsecase instance.
-        tasks_usecase = TasksUsecase(self.tasks_repo)
+        # tasks_usecase = TasksUsecase(self.tasks_repo)
+        tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.update_task(task_id=task_id, task_body=task_body)
 
     async def delete_task(self, task_id: int) -> TaskRead:
@@ -51,5 +58,6 @@ class TasksController:
         delete_task function
         """
         # Set TasksRepository instance to TasksUsecase instance.
-        tasks_usecase = TasksUsecase(self.tasks_repo)
+        # tasks_usecase = TasksUsecase(self.tasks_repo)
+        tasks_usecase = TasksUsecase(self.db)
         return await tasks_usecase.delete_task(task_id=task_id)

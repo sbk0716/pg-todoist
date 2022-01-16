@@ -16,11 +16,13 @@ def get_connection_pool(request: Request):
     """
     return request.app.state._db
 
+
 def get_database() -> Callable:
     """
     Return `get_db` function.
     `get_db` function returns `request.app.state._db`.
     """
+
     def get_db(db: Database = Depends(get_connection_pool)) -> Database:
         return db
 

@@ -51,8 +51,12 @@ class TasksRepository(BaseRepository):
                 if len(task_list) != 0:
                     # databases.backends.postgres.Record -> dict
                     dict_task_list = [dict(task) for task in task_list]
-                    sorted_list = sorted(dict_task_list, key=lambda x: x["updated_at"], reverse=True)
-                    task_read_list: List[TaskDoneRead] = [TaskDoneRead(**task) for task in sorted_list]
+                    sorted_list = sorted(
+                        dict_task_list, key=lambda x: x["updated_at"], reverse=True
+                    )
+                    task_read_list: List[TaskDoneRead] = [
+                        TaskDoneRead(**task) for task in sorted_list
+                    ]
                     return task_read_list
                 else:
                     return task_list
@@ -144,7 +148,9 @@ class TasksRepository(BaseRepository):
                 task = await self.get_task_by_id(task_id=task_id)
                 if task is None:
                     return None
-                task = await self.db.fetch_one(query=DELETE_TASK_BY_ID_QUERY, values={"id": task_id})
+                task = await self.db.fetch_one(
+                    query=DELETE_TASK_BY_ID_QUERY, values={"id": task_id}
+                )
                 logger.info("[databases.backends.postgres.Record]")
                 logger.info(dict(task.items()))
                 task = TaskRead(**task)

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Request, status, Depends, Path, Header, Body
+from databases import Database
 from typing import Optional, List
 from api.core.logging import logger
-from api.dependencies.db import get_repository
+from api.dependencies.db import get_repository, get_database
 from api.interfaces.db.repositories.tasks import TasksRepository
 from api.interfaces.controllers.tasks import TasksController
 from api.interfaces.schemas.task import (
@@ -23,6 +24,7 @@ router = APIRouter()
 async def list_tasks(
     request: Request,
     user_agent: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
     tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> List[TaskDoneRead]:
     """
@@ -31,7 +33,8 @@ async def list_tasks(
     logger.info(f"request.headers: {request.headers}")
     logger.info(f"user_agent: {user_agent}")
     # Set TasksRepository to TasksController instance.
-    tasks_controller = TasksController(tasks_repo)
+    # tasks_controller = TasksController(tasks_repo)
+    tasks_controller = TasksController(db)
     return await tasks_controller.list_tasks()
 
 
@@ -44,6 +47,7 @@ async def list_tasks(
 async def get_task(
     request: Request,
     user_agent: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
     task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
     tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> List[TaskDoneRead]:
@@ -53,7 +57,8 @@ async def get_task(
     logger.info(f"request.headers: {request.headers}")
     logger.info(f"user_agent: {user_agent}")
     # Set TasksRepository to TasksController instance.
-    tasks_controller = TasksController(tasks_repo)
+    # tasks_controller = TasksController(tasks_repo)
+    tasks_controller = TasksController(db)
     return await tasks_controller.get_task(task_id=task_id)
 
 
@@ -66,6 +71,7 @@ async def get_task(
 async def create_task(
     request: Request,
     user_agent: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
     task_body: TaskCreate = Body(...),
     tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> TaskRead:
@@ -75,7 +81,8 @@ async def create_task(
     logger.info(f"request.headers: {request.headers}")
     logger.info(f"user_agent: {user_agent}")
     # Set TasksRepository to TasksController instance.
-    tasks_controller = TasksController(tasks_repo)
+    # tasks_controller = TasksController(tasks_repo)
+    tasks_controller = TasksController(db)
     return await tasks_controller.create_task(task_body=task_body)
 
 
@@ -88,6 +95,7 @@ async def create_task(
 async def update_task(
     request: Request,
     user_agent: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
     task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
     task_body: TaskUpdate = Body(...),
     tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
@@ -98,7 +106,8 @@ async def update_task(
     logger.info(f"request.headers: {request.headers}")
     logger.info(f"user_agent: {user_agent}")
     # Set TasksRepository to TasksController instance.
-    tasks_controller = TasksController(tasks_repo)
+    # tasks_controller = TasksController(tasks_repo)
+    tasks_controller = TasksController(db)
     return await tasks_controller.update_task(task_id=task_id, task_body=task_body)
 
 
@@ -111,6 +120,7 @@ async def update_task(
 async def delete_task(
     request: Request,
     user_agent: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
     task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
     tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
 ) -> TaskRead:
@@ -120,5 +130,6 @@ async def delete_task(
     logger.info(f"request.headers: {request.headers}")
     logger.info(f"user_agent: {user_agent}")
     # Set TasksRepository to TasksController instance.
-    tasks_controller = TasksController(tasks_repo)
+    # tasks_controller = TasksController(tasks_repo)
+    tasks_controller = TasksController(db)
     return await tasks_controller.delete_task(task_id=task_id)
