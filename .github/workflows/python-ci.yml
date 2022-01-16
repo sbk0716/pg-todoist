@@ -142,6 +142,7 @@ jobs:
 
     - name: 'Setup PostgreSQL service container'
       run: |
+        export PGPASSWORD=dummypassword
         psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
         psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;,
         printenv | grep ENV
