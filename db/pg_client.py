@@ -82,13 +82,14 @@ if __name__ == "__main__":
     # Connect to database.
     # connection = psycopg2.connect(DB_URL_STR)
 
-
     # Connect to an existing database
-    connection = psycopg2.connect(user=f"{POSTGRES_USER}",
-                                  password=f"{POSTGRES_PASSWORD}",
-                                  host=f"{POSTGRES_HOST}",
-                                  port=f"{POSTGRES_PORT}",
-                                  database=f"{POSTGRES_DB}")
+    connection = psycopg2.connect(
+        user=f"{POSTGRES_USER}",
+        password=f"{POSTGRES_PASSWORD}",
+        host=f"{POSTGRES_HOST}",
+        port=f"{POSTGRES_PORT}",
+        database=f"{POSTGRES_DB}",
+    )
 
     connection.autocommit = True
     # execute drop_all function.
