@@ -1,8 +1,9 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, Request, status, Depends, Path, Header
+from databases import Database
+from typing import Optional
 from api.core.logging import logger
-from api.dependencies.db import get_repository
-from api.interfaces.db.repositories.tasks import TasksRepository
-from api.interfaces.db.repositories.dones import DonesRepository
+from api.dependencies.db import get_database
+from api.interfaces.controllers.dones import DonesController
 from api.interfaces.schemas.done import (
     DoneRead,
 )
@@ -17,21 +18,18 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
 )
 async def mark_task_as_done(
-    task_id: int,
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
-    dones_repo: DonesRepository = Depends(get_repository(DonesRepository)),
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
+    task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
 ) -> DoneRead:
     """
     mark_task_as_done function
     """
-    task_read = await tasks_repo.get_task_with_done(task_id=task_id)
-    if task_read is None:
-        logger.error("Task not found")
-        raise HTTPException(status_code=404, detail="Task not found")
-    done = await dones_repo.get_done_by_id(task_id=task_id)
-    if done is not None:
-        raise HTTPException(status_code=400, detail="Done already exists")
-    return await dones_repo.create_done(task_id=task_id)
+    logger.info(f"request.headers: {request.headers}")
+    logger.info(f"authorization: {authorization}")
+    dones_controller = DonesController(db)
+    return await dones_controller.mark_task_as_done(task_id=task_id)
 
 
 @router.delete(
@@ -41,18 +39,15 @@ async def mark_task_as_done(
     status_code=status.HTTP_200_OK,
 )
 async def unmark_task_as_done(
-    task_id: int,
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
-    dones_repo: DonesRepository = Depends(get_repository(DonesRepository)),
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
+    task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
 ) -> DoneRead:
     """
     unmark_task_as_done function
     """
-    task_read = await tasks_repo.get_task_with_done(task_id=task_id)
-    if task_read is None:
-        logger.error("Task not found")
-        raise HTTPException(status_code=404, detail="Task not found")
-    done = await dones_repo.get_done_by_id(task_id=task_id)
-    if done is None:
-        raise HTTPException(status_code=404, detail="Done not found")
-    return await dones_repo.delete_done(task_id=task_id)
+    logger.info(f"request.headers: {request.headers}")
+    logger.info(f"authorization: {authorization}")
+    dones_controller = DonesController(db)
+    return await dones_controller.unmark_task_as_done(task_id=task_id)

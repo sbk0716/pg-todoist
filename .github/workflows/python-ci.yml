@@ -1,0 +1,178 @@
+name: 'Python CI'
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    types: [opened, edited]
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+    paths:
+      - '.github/**'
+      - 'api/**'
+      - 'db/**'
+      - 'tests/**'
+      - '*.yaml'
+
+env:
+  ENV: test
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_HOST: localhost
+  POSTGRES_DB: testdb
+  POSTGRES_PORT: 5432
+  POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
+  TZ: Asia/Tokyo
+
+jobs:
+  lintFormatJob:
+    name: 'lint and format job'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9"]
+    steps:
+    - name: 'Dump GITHUB_REF'
+      env:
+        GITHUB_REF: ${{ github.ref }}
+      run: echo "$GITHUB_REF"
+    - name: 'Dump GITHUB_EVENT_PR_BASE_REF'
+      env:
+        GITHUB_EVENT_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+      run: echo "$GITHUB_EVENT_PR_BASE_REF"
+    - name: 'Dump GITHUB_EVENT_PR_HEAD_REF'
+      env:
+        GITHUB_EVENT_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      run: echo "$GITHUB_EVENT_PR_HEAD_REF"
+
+    - name: 'Check out repository code'
+      uses: actions/checkout@v2
+
+    - name: 'Set up Python ${{ matrix.python-version }}'
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry add --dev black flake8
+        if [ -f pyproject.toml ]; then poetry install; fi
+
+    - name: 'Lint with flake8'
+      run: |
+        poetry run flake8 api db tests
+
+    - name: 'Format with black'
+      run: |
+        poetry run black api db tests
+
+
+  testJob:
+    name: 'test job'
+    runs-on: ubuntu-latest
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        # `ports` maps tcp port 5432 on service container to the host
+        ports:
+          - 5432:5432
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9"]
+    steps:
+    - name: 'Dump GITHUB_REF'
+      env:
+        GITHUB_REF: ${{ github.ref }}
+      run: echo "$GITHUB_REF"
+    - name: 'Dump GITHUB_EVENT_PR_BASE_REF'
+      env:
+        GITHUB_EVENT_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+      run: echo "$GITHUB_EVENT_PR_BASE_REF"
+    - name: 'Dump GITHUB_EVENT_PR_HEAD_REF'
+      env:
+        GITHUB_EVENT_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      run: echo "$GITHUB_EVENT_PR_HEAD_REF"
+
+    - name: 'Check out repository code'
+      uses: actions/checkout@v2
+
+    - name: 'Set up Python ${{ matrix.python-version }}'
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 'Install dependencies'
+      run: |
+        ls -la
+        python -m pip install --upgrade pip
+        pip install poetry psycopg2 starlette
+        poetry add --dev pytest
+        if [ -f pyproject.toml ]; then poetry install; fi
+
+    - name: 'Show Docker containers'
+      run: |
+        echo "##### docker ps -a #####"
+        docker ps -a
+        echo "##### docker image ls #####"
+        docker image ls
+        echo "##### docker volume ls #####"
+        docker volume ls
+        echo "##### docker network ls #####"
+        docker network ls
+
+    - name: 'Check PostgreSQL information'
+      run: |
+        export PGPASSWORD=${POSTGRES_PASSWORD}
+        psql -p ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
+        psql -p ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;'
+      env:
+        ENV: test
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_HOST: localhost
+        POSTGRES_DB: postgres
+        POSTGRES_PORT: 5432
+
+    - name: 'Setup PostgreSQL service container'
+      run: |
+        ls -la
+        printenv | grep ENV
+        python db/pg_client.py
+
+    - name: 'Execute migration'
+      run: |
+        ls -la
+        printenv | grep ENV
+        poetry run alembic current
+        poetry run alembic upgrade head
+        poetry run alembic current
+        poetry run alembic history --verbose
+
+    - name: 'Test with pytest'
+      run: |
+        ls -la
+        printenv | grep ENV
+        poetry run pytest -v

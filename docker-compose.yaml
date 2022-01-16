@@ -14,7 +14,7 @@ services:
       dockerfile: ./api/Dockerfile    # The Dockerfile used for building the image
     # Named volumes and paths on the host mapped to paths in the container
     volumes:
-      - .dockervenv:/src/.venv
+      - .venv:/src/.venv
       - .:/src
     # Ports that will be exposed to the host
     ports:

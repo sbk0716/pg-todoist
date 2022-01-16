@@ -1,8 +1,10 @@
-from fastapi import APIRouter, status, Depends, HTTPException
-from typing import List
+from fastapi import APIRouter, Request, status, Depends, Path, Header, Body
+from databases import Database
+from typing import Optional, List
 from api.core.logging import logger
-from api.dependencies.db import get_repository
+from api.dependencies.db import get_repository, get_database
 from api.interfaces.db.repositories.tasks import TasksRepository
+from api.interfaces.controllers.tasks import TasksController
 from api.interfaces.schemas.task import (
     TaskDoneRead,
     TaskRead,
@@ -20,13 +22,17 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def list_tasks(
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
 ) -> List[TaskDoneRead]:
     """
     list_tasks function
     """
-    task_read_list = await tasks_repo.get_all_task_with_done()
-    return task_read_list
+    logger.info(f"request.headers: {request.headers}")
+    logger.info(f"authorization: {authorization}")
+    tasks_controller = TasksController(db)
+    return await tasks_controller.list_tasks()
 
 
 @router.get(
@@ -36,16 +42,18 @@ async def list_tasks(
     status_code=status.HTTP_200_OK,
 )
 async def get_task(
-    task_id: int, tasks_repo: TasksRepository = Depends(get_repository(TasksRepository))
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
+    task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
 ) -> List[TaskDoneRead]:
     """
     get_task function
     """
-    task_read = await tasks_repo.get_task_with_done(task_id=task_id)
-    if task_read is None:
-        logger.error("Task not found")
-        raise HTTPException(status_code=404, detail="Task not found")
-    return task_read
+    logger.info(f"request.headers: {request.headers}")
+    logger.info(f"authorization: {authorization}")
+    tasks_controller = TasksController(db)
+    return await tasks_controller.get_task(task_id=task_id)
 
 
 @router.post(
@@ -55,14 +63,18 @@ async def get_task(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_task(
-    task_body: TaskCreate,
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
+    task_body: TaskCreate = Body(...),
 ) -> TaskRead:
     """
     create_task function
     """
-    created_task = await tasks_repo.create_task(task_body=task_body)
-    return created_task
+    logger.info(f"request.headers: {request.headers}")
+    logger.info(f"authorization: {authorization}")
+    tasks_controller = TasksController(db)
+    return await tasks_controller.create_task(task_body=task_body)
 
 
 @router.put(
@@ -72,17 +84,19 @@ async def create_task(
     status_code=status.HTTP_200_OK,
 )
 async def update_task(
-    task_id: int,
-    task_body: TaskUpdate,
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
+    task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
+    task_body: TaskUpdate = Body(...),
 ) -> TaskRead:
     """
     update_task function
     """
-    updated_task = await tasks_repo.update_task_by_id(task_id=task_id, task_body=task_body)
-    if updated_task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return updated_task
+    logger.info(f"request.headers: {request.headers}")
+    logger.info(f"authorization: {authorization}")
+    tasks_controller = TasksController(db)
+    return await tasks_controller.update_task(task_id=task_id, task_body=task_body)
 
 
 @router.delete(
@@ -92,13 +106,15 @@ async def update_task(
     status_code=status.HTTP_200_OK,
 )
 async def delete_task(
-    task_id: int,
-    tasks_repo: TasksRepository = Depends(get_repository(TasksRepository)),
+    request: Request,
+    authorization: Optional[str] = Header(None),
+    db: Database = Depends(get_database()),
+    task_id: int = Path(..., title="The ID of the record to get.", gt=0, le=1000),
 ) -> TaskRead:
     """
     delete_task function
     """
-    deleted_task = await tasks_repo.delete_task_by_id(task_id=task_id)
-    if deleted_task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return deleted_task
+    logger.info(f"request.headers: {request.headers}")
+    logger.info(f"authorization: {authorization}")
+    tasks_controller = TasksController(db)
+    return await tasks_controller.delete_task(task_id=task_id)

@@ -16,7 +16,7 @@ This app is able to use below function.
 
 ## (2)Project Structure
 ```sh
-admin@gw-mac simple-fastapi % tree -d
+admin@gw-mac pg-todoist % tree -d
 .
 ├── api
 │   ├── core
@@ -26,59 +26,137 @@ admin@gw-mac simple-fastapi % tree -d
 │   ├── infra
 │   │   ├── db
 │   │   └── routers
-│   └── interfaces
-│       ├── db
-│       │   ├── queries
-│       │   └── repositories
-│       └── schemas
+│   ├── interfaces
+│   │   ├── controllers
+│   │   ├── db
+│   │   │   ├── queries
+│   │   │   └── repositories
+│   │   └── schemas
+│   └── usecases
 ├── db
 ├── migrations
 │   └── versions
 └── tests
 
-17 directories
-admin@gw-mac simple-fastapi % 
+19 directories
+admin@gw-mac pg-todoist % 
 ```
 
 
 # 2. Usage
-
-## (1)docker-compose up
+## (1)poetry install
 ```sh
-admin@gw-mac fast-todo % docker image ls
-REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
-admin@gw-mac fast-todo % docker volume ls
-DRIVER    VOLUME NAME
-admin@gw-mac fast-todo % 
-admin@gw-mac fast-todo % docker-compose up -d --build
-Creating network "fast-todo_default" with the default driver
-Creating volume "fast-todo_mysql_data" with default driver
-Building app-api
-[+] Building 2.1s (11/11) FINISHED   
-...
-...
-Creating fast-todo_app-db_1  ... done
-Creating fast-todo_app-api_1 ... done
-admin@gw-mac fast-todo % 
-admin@gw-mac fast-todo % docker image ls
-REPOSITORY          TAG       IMAGE ID       CREATED          SIZE
-fast-todo_app-api   latest    5380a020174b   24 minutes ago   959MB
-mysql               8.0       bbf6571db497   9 days ago       516MB
-admin@gw-mac fast-todo % 
-admin@gw-mac fast-todo % docker volume ls
-DRIVER    VOLUME NAME
-local     fast-todo_mysql_data
-admin@gw-mac fast-todo % 
-admin@gw-mac fast-todo % docker ps
-CONTAINER ID   IMAGE               COMMAND                  CREATED         STATUS         PORTS                                                    NAMES
-c47c5b30908f   fast-todo_app-api   "poetry run uvicorn …"   2 minutes ago   Up 2 minutes   0.0.0.0:8000->8000/tcp, :::8000->8000/tcp                fast-todo_app-api_1
-390c305998df   mysql:8.0           "docker-entrypoint.s…"   2 minutes ago   Up 2 minutes   33060/tcp, 0.0.0.0:13306->3306/tcp, :::13306->3306/tcp   fast-todo_app-db_1
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % docker-compose run --entrypoint "poetry install" app-api
+Creating pg-todoist_app-api_run ... done
+Installing dependencies from lock file
+
+No dependencies to install or update
+admin@gw-mac pg-todoist % 
 ```
 
-## (2)generate migratation file for app db
+## (2)docker-compose up
 ```sh
-admin@gw-mac simple-fastapi % docker-compose exec app-api /bin/bash
+admin@gw-mac pg-todoist % docker image ls
+REPOSITORY   TAG       IMAGE ID   CREATED   SIZE
+admin@gw-mac pg-todoist % docker volume ls
+DRIVER    VOLUME NAME
+admin@gw-mac pg-todoist % 
+admin@gw-mac pg-todoist % docker-compose up -d --build
+Creating network "pg-todoist_default" with the default driver
+Creating volume "pg-todoist_postgres_data" with default driver
+...
+...
+Creating pg-todoist_app-db_1  ... done
+Creating pg-todoist_app-api_1 ... done
+admin@gw-mac pg-todoist % 
+admin@gw-mac pg-todoist % docker image ls
+REPOSITORY           TAG           IMAGE ID       CREATED         SIZE
+pg-todoist_app-api   latest        5184743123b8   2 minutes ago   981MB
+postgres             14.1-alpine   1149d285a5f5   12 days ago     209MB
+admin@gw-mac pg-todoist % docker volume ls
+DRIVER    VOLUME NAME
+local     pg-todoist_postgres_data
+admin@gw-mac pg-todoist % 
+admin@gw-mac pg-todoist % docker ps
+CONTAINER ID   IMAGE                  COMMAND                  CREATED          STATUS          PORTS                                         NAMES
+11e38a66e34a   pg-todoist_app-api     "poetry run uvicorn …"   14 seconds ago   Up 13 seconds   0.0.0.0:8000->8000/tcp, :::8000->8000/tcp     pg-todoist_app-api_1
+51a9fb2883f5   postgres:14.1-alpine   "docker-entrypoint.s…"   14 seconds ago   Up 13 seconds   0.0.0.0:15432->5432/tcp, :::15432->5432/tcp   pg-todoist_app-db_1
+admin@gw-mac pg-todoist % 
+```
+
+## (3)migratation for app db
+```sh
+admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
+root@11e38a66e34a:/src# 
+root@11e38a66e34a:/src# poetry run alembic current
+POSTGRES_DB: coredb
+execute run_migrations_online
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+root@11e38a66e34a:/src# 
+root@11e38a66e34a:/src# poetry run alembic upgrade head
+POSTGRES_DB: coredb
+execute run_migrations_online
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> e5cc805f99e4, 1_create_tasks_and_dones_table
+INFO  [alembic.runtime.migration] Running upgrade e5cc805f99e4 -> b430a6422cda, 2_add_status_type_column
+root@11e38a66e34a:/src# 
+root@11e38a66e34a:/src# poetry run alembic history --verbose
+Rev: b430a6422cda (head)
+Parent: e5cc805f99e4
+Path: /src/migrations/versions/b430a6422cda_2_add_status_type_column.py
+
+    2_add_status_type_column
+    
+    Revision ID: b430a6422cda
+    Revises: e5cc805f99e4
+    Create Date: 2022-01-16 08:09:12.304373
+
+Rev: e5cc805f99e4
+Parent: <base>
+Path: /src/migrations/versions/e5cc805f99e4_1_create_tasks_and_dones_table.py
+
+    1_create_tasks_and_dones_table
+    
+    Revision ID: e5cc805f99e4
+    Revises: 
+    Create Date: 2022-01-15 21:43:30.278141
+
+root@11e38a66e34a:/src# 
+```
+
+## (4)docker-compose down
+```sh
+admin@gw-mac pg-todoist % docker-compose down
+Removing pg-todoist_app-api_1 ... done
+Removing pg-todoist_app-db_1  ... done
+Removing network pg-todoist_default
+admin@gw-mac pg-todoist % 
+admin@gw-mac pg-todoist % docker volume ls
+DRIVER    VOLUME NAME
+local     pg-todoist_postgres_data
+admin@gw-mac pg-todoist % 
+admin@gw-mac pg-todoist % docker volume rm pg-todoist_postgres_data
+pg-todoist_postgres_data
+admin@gw-mac pg-todoist % 
+admin@gw-mac pg-todoist % docker image ls
+REPOSITORY           TAG           IMAGE ID       CREATED          SIZE
+pg-todoist_app-api   latest        9d3acaa41821   11 minutes ago   981MB
+postgres             14.1-alpine   1149d285a5f5   12 days ago      209MB
+python               3.9-buster    5b9959224c95   3 weeks ago      830MB
+admin@gw-mac pg-todoist % 
+admin@gw-mac pg-todoist % docker image rm 9d3acaa41821
+Untagged: pg-todoist_app-api:latest
+Deleted: sha256:9d3acaa418210f3c49e0f9885ccca1fbdf70a336a5cb7a4013ed3ce6476b6f7b
+admin@gw-mac pg-todoist % 
+```
+
+
+# 3. Generate migratation file
+## (1)generate migratation file
+```sh
+admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
 root@bd6bc0f7ab71:/src# poetry run alembic revision --autogenerate -m "1_create_tasks_and_dones_table"
 POSTGRES_DB: coredb
 execute run_migrations_online
@@ -94,61 +172,11 @@ All done! ✨ 🍰 ✨
 root@8025b42a4ce1:/src# 
 ```
 
-## (3)migratation for app db
-```sh
-admin@gw-mac fast-todo % docker-compose exec app-api /bin/bash
-root@82aa92de72bf:/src# poetry run alembic upgrade +1
-POSTGRES_DB: coredb
-execute run_migrations_online
-INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
-INFO  [alembic.runtime.migration] Will assume transactional DDL.
-INFO  [alembic.runtime.migration] Running upgrade  -> e5cc805f99e4, 1_create_tasks_and_dones_table
-root@82aa92de72bf:/src# 
-root@82aa92de72bf:/src# poetry run alembic history --verbose
-Rev: e5cc805f99e4 (head)
-Parent: <base>
-Path: /src/migrations/versions/e5cc805f99e4_1_create_tasks_and_dones_table.py
 
-    1_create_tasks_and_dones_table
-    
-    Revision ID: e5cc805f99e4
-    Revises: 
-    Create Date: 2022-01-15 21:43:30.278141
-
-root@82aa92de72bf:/src# 
-```
-
-## (4)docker-compose down
-```sh
-admin@gw-mac fast-todo % docker-compose down
-Stopping fast-todo_app-api_1 ... done
-Stopping fast-todo_app-db_1  ... done
-Removing fast-todo_app-api_1 ... done
-Removing fast-todo_app-db_1  ... done
-Removing network fast-todo_default
-admin@gw-mac fast-todo % 
-admin@gw-mac fast-todo % docker volume ls
-DRIVER    VOLUME NAME
-local     fast-todo_mysql_data
-admin@gw-mac fast-todo % 
-admin@gw-mac fast-todo % docker volume rm fast-todo_mysql_data
-fast-todo_mysql_data
-admin@gw-mac fast-todo % docker image ls
-REPOSITORY          TAG       IMAGE ID       CREATED             SIZE
-fast-todo_app-api   latest    5380a020174b   About an hour ago   959MB
-mysql               8.0       bbf6571db497   9 days ago          516MB
-admin@gw-mac fast-todo % docker image rm 5380a020174b         
-Untagged: fast-todo_app-api:latest
-Deleted: sha256:5380a020174bcdd5156f1f8931b8a1116379fa052b5650ef8e496ed115e610d6
-admin@gw-mac fast-todo % 
-```
-
-
-# 3. operation verification
-
+# 4. operation verification
 ## (1)POST /api/tasks/
 ```sh
-admin@gw-mac fast-todo % curl -X 'POST' \
+admin@gw-mac pg-todoist % curl -X 'POST' \
   'http://localhost:8000/api/tasks/' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
@@ -166,12 +194,12 @@ admin@gw-mac fast-todo % curl -X 'POST' \
   "created_at": "2021-12-26T20:51:10",
   "updated_at": "2021-12-26T20:51:10"
 }
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % 
 ```
 
 ## (2)GET /api/tasks/{task_id}/
 ```sh
-admin@gw-mac fast-todo % curl -X 'GET' \
+admin@gw-mac pg-todoist % curl -X 'GET' \
   'http://localhost:8000/api/tasks/1/' \
   -H 'accept: application/json' | jq -r '.'
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -185,12 +213,12 @@ admin@gw-mac fast-todo % curl -X 'GET' \
   "created_at": "2021-12-26T20:51:10",
   "updated_at": "2021-12-26T20:51:10"
 }
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % 
 ```
 
 ## (3)GET /api/tasks/
 ```sh
-admin@gw-mac fast-todo % curl -X 'GET' \
+admin@gw-mac pg-todoist % curl -X 'GET' \
   'http://localhost:8000/api/tasks/' \
   -H 'accept: application/json' | jq -r '.'
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -214,12 +242,12 @@ admin@gw-mac fast-todo % curl -X 'GET' \
     "updated_at": "2021-12-26T20:54:36"
   }
 ]
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % 
 ```
 
 ## (4)PUT /api/tasks/{task_id}/
 ```sh
-admin@gw-mac fast-todo % curl -X 'PUT' \
+admin@gw-mac pg-todoist % curl -X 'PUT' \
   'http://localhost:8000/api/tasks/2/' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
@@ -237,12 +265,12 @@ admin@gw-mac fast-todo % curl -X 'PUT' \
   "created_at": "2021-12-26T20:54:36",
   "updated_at": "2021-12-26T20:57:11"
 }
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % 
 ```
 
 ## (5)PUT /api/tasks/{task_id}/done/
 ```sh
-admin@gw-mac fast-todo % curl -X 'PUT' \
+admin@gw-mac pg-todoist % curl -X 'PUT' \
   'http://localhost:8000/api/tasks/2/done/' \
   -H 'accept: application/json' | jq -r '.'
 
@@ -252,12 +280,12 @@ admin@gw-mac fast-todo % curl -X 'PUT' \
 {
   "message": "create_done | ID: 2"
 }
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % 
 ```
 
 ## (6)DELETE /api/tasks/{task_id}/done/
 ```sh
-admin@gw-mac fast-todo % curl -X 'DELETE' \
+admin@gw-mac pg-todoist % curl -X 'DELETE' \
   'http://localhost:8000/api/tasks/2/done/' \
   -H 'accept: application/json' | jq -r '.'
 
@@ -267,12 +295,12 @@ admin@gw-mac fast-todo % curl -X 'DELETE' \
 {
   "message": "delete_done | ID: 2"
 }
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % 
 ```
 
 ## (7)DELETE /api/tasks/{task_id}/
 ```sh
-admin@gw-mac fast-todo % curl -X 'DELETE' \
+admin@gw-mac pg-todoist % curl -X 'DELETE' \
   'http://localhost:8000/api/tasks/2/' \
   -H 'accept: application/json' | jq -r '.'
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -285,16 +313,36 @@ admin@gw-mac fast-todo % curl -X 'DELETE' \
   "created_at": "2021-12-26T20:54:36",
   "updated_at": "2021-12-26T20:57:11"
 }
-admin@gw-mac fast-todo % 
+admin@gw-mac pg-todoist % 
 ```
 
 
-# 4. Lint and Format and Test
+# 5. Lint and Format
+## (1)poetry run flake8
+```sh
+admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
+root@aef0a7ee5af8:/src# 
+root@aef0a7ee5af8:/src# poetry run flake8 api db tests
+db/client.py:38:11: F541 f-string is missing placeholders
+root@aef0a7ee5af8:/src# 
+```
 
+## (2)poetry run black
+```sh
+admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
+root@aef0a7ee5af8:/src# 
+root@aef0a7ee5af8:/src# poetry run black api db tests
+All done! ✨ 🍰 ✨
+32 files left unchanged.
+root@aef0a7ee5af8:/src# 
+```
+
+
+# 5. Test
 ## (1)set up postgresql
 ```sh
-admin@gw-mac simple-fastapi % docker-compose exec app-api /bin/bash
-root@82aa92de72bf:/src# python db/pg_client.py
+admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
+root@c6ea00e01944:/src# python db/pg_client.py
 ==================================================
 1. SELECT datname, datdba, encoding, datcollate, datctype from pg_database
 ==================================================
@@ -312,81 +360,56 @@ root@82aa92de72bf:/src# python db/pg_client.py
 (usename, usesysid, usecreatedb, usesuper, passwd)
 --------------------------------------------------
 ('admin', 10, True, True, '********')
-('root', 67260, False, True, '********')
+('root', 16394, False, True, '********')
 ==================================================
-root@82aa92de72bf:/src# 
+root@c6ea00e01944:/src# 
 ```
 
 ## (2)migratation for test db
 ```sh
-admin@gw-mac fast-todo % docker-compose exec app-api /bin/bash
-root@82aa92de72bf:/src# export ENV=test
-root@82aa92de72bf:/src# printenv | grep ENV
+admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
+root@c6ea00e01944:/src# export ENV=test
+root@c6ea00e01944:/src# printenv | grep ENV
 ENV=test
-root@82aa92de72bf:/src# poetry run alembic current
+root@c6ea00e01944:/src# poetry run alembic current
 POSTGRES_DB: testdb
 execute run_migrations_online
 INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
 INFO  [alembic.runtime.migration] Will assume transactional DDL.
-root@82aa92de72bf:/src# 
-root@82aa92de72bf:/src# poetry run alembic upgrade head
+root@c6ea00e01944:/src# 
+root@c6ea00e01944:/src# poetry run alembic upgrade head
 POSTGRES_DB: testdb
 execute run_migrations_online
 INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
 INFO  [alembic.runtime.migration] Will assume transactional DDL.
 INFO  [alembic.runtime.migration] Running upgrade  -> e5cc805f99e4, 1_create_tasks_and_dones_table
-root@82aa92de72bf:/src# 
-root@82aa92de72bf:/src# poetry run alembic current
+INFO  [alembic.runtime.migration] Running upgrade e5cc805f99e4 -> b430a6422cda, 2_add_status_type_column
+root@c6ea00e01944:/src# 
+root@c6ea00e01944:/src# poetry run alembic current
 POSTGRES_DB: testdb
 execute run_migrations_online
 INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
 INFO  [alembic.runtime.migration] Will assume transactional DDL.
-e5cc805f99e4 (head)
-root@82aa92de72bf:/src# 
+b430a6422cda (head)
+root@c6ea00e01944:/src# 
 ```
 
-
-## (3)poetry run flake8
+## (3)poetry run pytest
 ```sh
-root@aef0a7ee5af8:/src# export ENV=test
-root@aef0a7ee5af8:/src# printenv | grep ENV
-ENV=test
-root@aef0a7ee5af8:/src# 
-root@aef0a7ee5af8:/src# poetry run flake8 api db tests
-db/client.py:38:11: F541 f-string is missing placeholders
-root@aef0a7ee5af8:/src# 
-```
-
-
-## (4)poetry run black
-```sh
-root@aef0a7ee5af8:/src# export ENV=test
-root@aef0a7ee5af8:/src# printenv | grep ENV
-ENV=test
-root@aef0a7ee5af8:/src# 
-root@aef0a7ee5af8:/src# poetry run black api db tests
-All done! ✨ 🍰 ✨
-32 files left unchanged.
-root@aef0a7ee5af8:/src# 
-```
-
-
-## (5)poetry run pytest
-```sh
-root@82aa92de72bf:/src# poetry run pytest -v --cov=.
-========================================= test session starts ==========================================
+root@c6ea00e01944:/src# poetry run pytest -v --cov=.
+========================================== test session starts ==========================================
 platform linux -- Python 3.9.9, pytest-6.2.5, py-1.11.0, pluggy-1.0.0 -- /src/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /src, configfile: pyproject.toml, testpaths: tests
 plugins: anyio-3.4.0, asyncio-0.16.0, cov-3.0.0
-collected 6 items                                                                                      
+collected 6 items                                                                                       
 
-tests/test_dones.py::TestCrudDones::test_done_flag PASSED                                        [ 16%]
-tests/test_health.py::TestHealth::test_health_check PASSED                                       [ 33%]
-tests/test_tasks.py::TestCrudTasks::test_create_task_and_read_task PASSED                        [ 50%]
-tests/test_tasks.py::TestCrudTasks::test_create_task_and_update_task PASSED                      [ 66%]
-tests/test_tasks.py::TestCrudTasks::test_create_task_and_delete_task PASSED                      [ 83%]
-tests/test_tasks.py::TestCrudTasks::test_create_all_task_and_read_all_task PASSED                [100%]
+tests/test_dones.py::TestCrudDones::test_done_flag PASSED                                         [ 16%]
+tests/test_health.py::TestHealth::test_health_check PASSED                                        [ 33%]
+tests/test_tasks.py::TestCrudTasks::test_create_task_and_read_task PASSED                         [ 50%]
+tests/test_tasks.py::TestCrudTasks::test_create_task_and_update_task PASSED                       [ 66%]
+tests/test_tasks.py::TestCrudTasks::test_create_task_and_delete_task PASSED                       [ 83%]
+tests/test_tasks.py::TestCrudTasks::test_create_all_task_and_read_all_task PASSED                 [100%]
 
 ----------- coverage: platform linux, python 3.9.9-final-0 -----------
 Name                                         Stmts   Miss  Cover
@@ -396,10 +419,10 @@ api/core/__init__.py                             0      0   100%
 api/core/environ.py                             18      1    94%
 api/core/logging.py                              3      0   100%
 api/dependencies/__init__.py                     0      0   100%
-api/dependencies/db.py                          16      0   100%
+api/dependencies/db.py                          12      0   100%
 api/domain/__init__.py                           0      0   100%
 api/domain/models/__init__.py                    0      0   100%
-api/domain/models/task.py                       29      0   100%
+api/domain/models/task.py                       23      0   100%
 api/infra/__init__.py                            0      0   100%
 api/infra/db/__init__.py                         0      0   100%
 api/infra/db/connection.py                      25     12    52%
@@ -415,20 +438,20 @@ api/interfaces/db/queries/tasks.py               6      0   100%
 api/interfaces/db/repositories/__init__.py       0      0   100%
 api/interfaces/db/repositories/base.py           4      0   100%
 api/interfaces/db/repositories/dones.py         49     15    69%
-api/interfaces/db/repositories/tasks.py        101     35    65%
+api/interfaces/db/repositories/tasks.py        107     35    67%
 api/interfaces/schemas/__init__.py               0      0   100%
 api/interfaces/schemas/done.py                  17      0   100%
-api/interfaces/schemas/task.py                  32      0   100%
+api/interfaces/schemas/task.py                  33      0   100%
 api/main.py                                     15      2    87%
 tests/__init__.py                                0      0   100%
 tests/conftest.py                               39     10    74%
-tests/test_dones.py                             20      0   100%
+tests/test_dones.py                             21      0   100%
 tests/test_health.py                            11      0   100%
-tests/test_tasks.py                             90      0   100%
+tests/test_tasks.py                             99      0   100%
 ----------------------------------------------------------------
-TOTAL                                          553     83    85%
+TOTAL                                          560     83    85%
 
 
-========================================== 6 passed in 37.79s ==========================================
-root@82aa92de72bf:/src# 
+========================================== 6 passed in 27.76s ===========================================
+root@c6ea00e01944:/src# 
 ```
