@@ -140,11 +140,14 @@ jobs:
         docker volume ls
         docker network ls
 
-    - name: 'Setup PostgreSQL service container'
+    - name: 'Check PostgreSQL information'
       run: |
         export PGPASSWORD=postgres
         psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
-        psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;,
+        psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;'
+
+    - name: 'Setup PostgreSQL service container'
+      run: |
         printenv | grep ENV
         python db/pg_client.py
       env:
