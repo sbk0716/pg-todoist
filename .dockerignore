@@ -1,7 +1,6 @@
 .DS_Store
 .coverage
 .dockerignore
-.dockervenv
 .git
 .github
 .gitignore

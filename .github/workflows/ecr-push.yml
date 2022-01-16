@@ -1,0 +1,88 @@
+
+name: 'ECR Push'
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+    paths:
+      - '.github/**'
+      - 'api/**'
+      - 'db/**'
+      - 'tests/**'
+      - '*.yaml'
+
+env:
+  AWS_REGION: 'ap-northeast-1'
+  ECR_REPOSITORY: 'pg-todoist-api'
+
+jobs:
+  pushJob:
+    name: 'ECR Push Job'
+    # Execute Job if GITHUB_EVENT_PR_HEAD_REF does not contain dependabot
+    if: ${{ github.event.pull_request.merged == true && contains(github.event.pull_request.head.ref, 'dependabot') != true}}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+    - name: 'Dump GITHUB_REF'
+      env:
+        GITHUB_REF: ${{ github.ref }}
+      run: echo "$GITHUB_REF"
+    - name: 'Dump GITHUB_EVENT_PR_BASE_REF'
+      env:
+        GITHUB_EVENT_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+      run: echo "$GITHUB_EVENT_PR_BASE_REF"
+    - name: 'Dump GITHUB_EVENT_PR_HEAD_REF'
+      env:
+        GITHUB_EVENT_PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      run: echo "$GITHUB_EVENT_PR_HEAD_REF"
+
+    - name: 'Check out repository code'
+      uses: actions/checkout@v2
+
+    - name: 'Set up Python ${{ matrix.python-version }}'
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 'Configure AWS credentials'
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: 'Login to Amazon ECR'
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: 'Login to Docker Hub'
+      id: login-docker-hub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+    - name: 'Build, tag, and push image to Amazon ECR'
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        COMMIT_HASH: ${{ github.sha }}
+        GITHUB_EVENT_PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+      run: |
+        SHORT_COMMIT_HASH=$(echo $COMMIT_HASH | cut -c 1-7)
+        if [ $(echo $GITHUB_EVENT_PR_BASE_REF | grep 'main') ]; then
+          IMAGE_TAG=main-$SHORT_COMMIT_HASH
+        elif [ $(echo $GITHUB_EVENT_PR_BASE_REF | grep 'develop') ]; then
+          IMAGE_TAG=develop-$SHORT_COMMIT_HASH
+        else
+          IMAGE_TAG=feature-$SHORT_COMMIT_HASH
+        fi
+        docker build -f api/Dockerfile.aws -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
