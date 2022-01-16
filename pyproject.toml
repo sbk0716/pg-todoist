@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "app-api"
+name = "ToDoIst API"
 version = "0.1.0"
-description = ""
+description = "RESTful API for ToDoIst App"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
