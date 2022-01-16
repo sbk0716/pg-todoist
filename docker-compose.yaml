@@ -1,23 +1,43 @@
+# Version of the Compose specification used
 version: '3'
+# The services in your project
 services:
-  demo-app:
+  # Container name for api
+  app-api:
     # Files containing environment variables that will be included
     env_file: .env
-    build: .
+    # [build context]
+    # When you issue a docker build command, the current working directory is called `the build context`.
+    # FYI: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#understand-build-context
+    build:
+      context: .                      # The context used for building the image
+      dockerfile: ./api/Dockerfile    # The Dockerfile used for building the image
+    # Named volumes and paths on the host mapped to paths in the container
     volumes:
       - .dockervenv:/src/.venv
       - .:/src
+    # Ports that will be exposed to the host
     ports:
-      - 8000:8000  # ホストマシンのポート8000を、docker内のポート8000に接続する
+      - 8000:8000               # Connect port 8000 on your local PC to port 8000 on the docker container
+  # Container name for db
   app-db:
     # Files containing environment variables that will be included
     env_file: .env
-    image: mysql:8.0
-    platform: linux/x86_64  # M1 Macの場合必要
+    # The image that will be pulled for the service
+    image: postgres:14.1-alpine
+    # [platform]
+    # Not all images are available for ARM64 architecture.
+    # You can add --platform linux/amd64 to run an Intel image under emulation.
+    # FYI: https://docs.docker.com/desktop/mac/apple-silicon/#known-issues
+    platform: linux/x86_64      # Required settings for M1 Mac
+    # Named volumes and paths on the host mapped to paths in the container
     volumes:
-      - mysql_data:/var/lib/mysql
-    command: --default-authentication-plugin=mysql_native_password  # MySQL8.0ではデフォルトが"caching_sha2_password"で、ドライバが非対応のため変更
+      - postgres_data:/var/lib/postgresql/data/
+      - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
+    # Ports that will be exposed to the host
     ports:
-      - 13306:3306  # ホストマシンのポート13306を、docker内のポート3306に接続する
+      - 15432:5432              # Connect port 15432 on your local PC to port 5432 on the docker container
+
+# Named volumes that are shared among multiple services
 volumes:
-  mysql_data:
+    postgres_data:

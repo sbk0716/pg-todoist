@@ -1,4 +1,7 @@
+.DS_Store
+.coverage
 .dockervenv
-.venv
-.pytest_cache
 .env
+.pytest_cache
+.venv
+htmlcov

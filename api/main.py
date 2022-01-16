@@ -1,30 +1,54 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from api.core import environ
+from api.infra.routers import router as api_router
+from api.infra.db.connection import connect_to_db, close_db_connection
 
-# Import logging | Logging package for Python.
-import logging
+# An instance of the class FastAPI will be the main point of interaction to create all your API.
+# https://fastapi.tiangolo.com/tutorial/first-steps/#step-2-create-a-fastapi-instance
+app = FastAPI(
+    title=environ.PROJECT_NAME,
+    description=environ.DESCRIPTION,
+    version=environ.VERSION,
+    docs_url="/docs",
+    redoc_url="/redoc",
+)
 
-from api.routers import task, done
-from api.session import connect_to_db, close_db_connection
+# Create a list of allowed origins (as strings).
+origins = [
+    # "http://grasswood.tk",
+    # "https://grasswood.tk",
+    "http://localhost"
+]
 
-# Set the logging level of this logger for uvicorn.
-logger = logging.getLogger("uvicorn")
-logger.setLevel(logging.INFO)
+# Add the parameter as a "middleware" to your FastAPI application.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # A list of origins that should be permitted to make cross-origin requests.
+    allow_credentials=True,  # Indicate that cookies should be supported for cross-origin requests.
+    allow_methods=["*"],  # A list of HTTP methods that should be allowed for cross-origin requests.
+    allow_headers=[
+        "*"
+    ],  # A list of HTTP request headers that should be supported for cross-origin requests.
+)
 
-app = FastAPI()
+# Add api router with all routes configured to your FastAPI application.
+app.include_router(api_router, prefix=environ.API_PREFIX)
+
+
+# Add a function that should be run before the application starts.
 @app.on_event("startup")
 async def startup():
-    logger.info("[startup]database.connect")
+    """
+    startup function
+    """
     await connect_to_db(app)
 
 
+# Add a function that should be run when the application is shutting down.
 @app.on_event("shutdown")
 async def shutdown():
-    logger.info("[shutdown]database.disconnect")
-    logger.info("app.state._db")
-    logger.info(app.state._db)
+    """
+    shutdown function
+    """
     await close_db_connection(app)
-
-# task router インスタンスを、FastAPIインスタンスに取り込む
-app.include_router(task.router)
-# done router インスタンスを、FastAPIインスタンスに取り込む
-app.include_router(done.router)
