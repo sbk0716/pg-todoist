@@ -10,10 +10,6 @@ POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 DB_URL_STR = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 TEST_DB = "testdb"
 
-print("++++++++++++++++++++++++++++++++++++++++")
-print(DB_URL_STR)
-print("++++++++++++++++++++++++++++++++++++++++")
-
 
 def drop_all(connection):
     # Generate cursor.
@@ -22,10 +18,6 @@ def drop_all(connection):
     # DROP DATABASE
     drop_db = f"DROP DATABASE IF EXISTS {TEST_DB};"
     cursor.execute(drop_db)
-
-    # # DROP ROLE
-    # drop_role = f"DROP ROLE IF EXISTS {POSTGRES_USER};"
-    # cursor.execute(drop_role)
 
     # DROP ROLE
     drop_role = "DROP ROLE IF EXISTS root;"
@@ -41,10 +33,6 @@ def create_all(connection):
     # CREATE DATABASE
     create_db = f"CREATE DATABASE {TEST_DB};"
     cursor.execute(create_db)
-
-    # # CREATE ROLE
-    # create_role = f"CREATE ROLE {POSTGRES_USER} LOGIN SUPERUSER PASSWORD '{POSTGRES_PASSWORD}';"
-    # cursor.execute(create_role)
 
     # CREATE ROLE
     create_role = f"CREATE ROLE root LOGIN SUPERUSER PASSWORD '{POSTGRES_PASSWORD}';"
@@ -84,16 +72,6 @@ def create_all(connection):
 if __name__ == "__main__":
     # Connect to database.
     connection = psycopg2.connect(DB_URL_STR)
-
-    # # Connect to an existing database
-    # connection = psycopg2.connect(
-    #     user=f"{POSTGRES_USER}",
-    #     password=f"{POSTGRES_PASSWORD}",
-    #     host=f"{POSTGRES_HOST}",
-    #     port=f"{POSTGRES_PORT}",
-    #     database=f"{POSTGRES_DB}",
-    # )
-
     connection.autocommit = True
     # execute drop_all function.
     drop_all(connection)

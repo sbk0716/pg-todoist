@@ -95,7 +95,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        # Maps tcp port 5432 on service container to the host
+        # `ports` maps tcp port 5432 on service container to the host
         ports:
           - 5432:5432
     strategy:
@@ -134,9 +134,13 @@ jobs:
 
     - name: 'Show Docker containers'
       run: |
+        echo "##### docker ps -a #####"
         docker ps -a
+        echo "##### docker image ls #####"
         docker image ls
+        echo "##### docker volume ls #####"
         docker volume ls
+        echo "##### docker network ls #####"
         docker network ls
 
     - name: 'Check PostgreSQL information'
