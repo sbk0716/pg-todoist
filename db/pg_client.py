@@ -2,12 +2,13 @@ import psycopg2
 from starlette.config import Config
 
 config = Config(".env")
-DEFAULT_POSTGRES_DB = "postgres"
+POSTGRES_DB = "postgres"
 POSTGRES_USER = config("POSTGRES_USER", cast=str, default="admin")
+# POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = config("POSTGRES_PASSWORD", cast=str)
-POSTGRES_SERVER = config("POSTGRES_SERVER", cast=str, default="app-db")
+POSTGRES_HOST = config("POSTGRES_HOST", cast=str, default="app-db")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
-DB_URL_STR = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{DEFAULT_POSTGRES_DB}"
+DB_URL_STR = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 TEST_DB = "testdb"
 
 
