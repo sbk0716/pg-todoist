@@ -21,13 +21,13 @@ on:
 
 env:
   ENV: test
-  # POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  # POSTGRES_USER: ${{ secrets.POSTGRES_PASSWORD }}
-  # POSTGRES_HOST: localhost
-  # POSTGRES_DB: testdb
-  # POSTGRES_PORT: 5432
-  # POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
-  # TZ: Asia/Tokyo
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_HOST: localhost
+  POSTGRES_DB: testdb
+  POSTGRES_PORT: 5432
+  POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
+  TZ: Asia/Tokyo
 
 jobs:
   lintFormatJob:
@@ -87,17 +87,16 @@ jobs:
         # Provide the password for postgres
         env:
           POSTGRES_PASSWORD: postgres
-          # POSTGRES_USER: postgres
-          # POSTGRES_DB: postgres
-          # POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_DB: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        # Maps tcp port 5432 on service container to the host
         ports:
-          # Maps tcp port 5432 on service container to the host
           - 5432:5432
     strategy:
       fail-fast: false
@@ -142,21 +141,23 @@ jobs:
 
     - name: 'Check PostgreSQL information'
       run: |
-        export PGPASSWORD=postgres
-        psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
-        psql -p 5432 --host localhost --username postgres --dbname postgres --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;'
-
-    - name: 'Setup PostgreSQL service container'
-      run: |
-        printenv | grep ENV
-        python db/pg_client.py
+        export PGPASSWORD=${POSTGRES_PASSWORD}
+        psql -p ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
+        psql -p ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;'
       env:
         ENV: test
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_HOST: localhost
         POSTGRES_DB: postgres
         POSTGRES_PORT: 5432
+
+    - name: 'Setup PostgreSQL service container'
+      run: |
+        ls -la
+        printenv | grep ENV
+        python db/pg_client.py
+
     - name: 'Execute migration'
       run: |
         ls -la
