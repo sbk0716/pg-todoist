@@ -140,6 +140,8 @@ jobs:
     - name: 'Setup PostgreSQL service container'
       run: |
         ls -la
+        psql -h postgres -U postgres -c 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database'
+        psql -h postgres -U postgres -c 'SELECT usename, usesysid, usecreatedb, usesuper, passwd FROM pg_user'
         printenv | grep ENV
         python db/pg_client.py
       env:
