@@ -26,17 +26,19 @@ admin@gw-mac pg-todoist % tree -d
 │   ├── infra
 │   │   ├── db
 │   │   └── routers
-│   └── interfaces
-│       ├── db
-│       │   ├── queries
-│       │   └── repositories
-│       └── schemas
+│   ├── interfaces
+│   │   ├── controllers
+│   │   ├── db
+│   │   │   ├── queries
+│   │   │   └── repositories
+│   │   └── schemas
+│   └── usecases
 ├── db
 ├── migrations
 │   └── versions
 └── tests
 
-17 directories
+19 directories
 admin@gw-mac pg-todoist % 
 ```
 
