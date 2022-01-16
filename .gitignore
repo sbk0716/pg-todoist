@@ -1,6 +1,5 @@
 .DS_Store
 .coverage
-.dockervenv
 .env
 .pytest_cache
 .venv

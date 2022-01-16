@@ -16,11 +16,11 @@ def drop_all(connection):
     cursor = connection.cursor()
 
     # DROP DATABASE
-    drop_db = f"DROP DATABASE {TEST_DB};"
+    drop_db = f"DROP DATABASE IF EXISTS {TEST_DB};"
     cursor.execute(drop_db)
 
     # DROP ROLE
-    drop_role = "DROP ROLE root;"
+    drop_role = "DROP ROLE IF EXISTS root;"
     cursor.execute(drop_role)
 
     cursor.close()
