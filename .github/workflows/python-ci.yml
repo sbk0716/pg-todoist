@@ -22,9 +22,9 @@ on:
 env:
   ENV: test
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-  POSTGRES_USER: postgres
-  POSTGRES_HOST: 127.0.0.1
-  POSTGRES_DB: postgres
+  POSTGRES_USER: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_HOST: localhost
+  POSTGRES_DB: testdb
   POSTGRES_PORT: 5432
   POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
   TZ: Asia/Tokyo
@@ -86,7 +86,7 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_PASSWORD: postgres
           POSTGRES_USER: postgres
           POSTGRES_DB: postgres
           POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
@@ -142,7 +142,13 @@ jobs:
         ls -la
         printenv | grep ENV
         python db/pg_client.py
-
+      env:
+        ENV: test
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_HOST: localhost
+        POSTGRES_DB: postgres
+        POSTGRES_PORT: 5432
     - name: 'Execute migration'
       run: |
         ls -la

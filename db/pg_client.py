@@ -4,8 +4,12 @@ from starlette.config import Config
 config = Config(".env")
 POSTGRES_DB = "postgres"
 POSTGRES_USER = config("POSTGRES_USER", cast=str, default="admin")
-# POSTGRES_USER = "postgres"
 POSTGRES_PASSWORD = config("POSTGRES_PASSWORD", cast=str)
+# POSTGRES_HOST = config("POSTGRES_HOST", cast=str, default="app-db")
+# POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
+# POSTGRES_DB = "postgres"
+# POSTGRES_USER = "postgres"
+# POSTGRES_PASSWORD = "postgres"
 POSTGRES_HOST = config("POSTGRES_HOST", cast=str, default="app-db")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 DB_URL_STR = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
