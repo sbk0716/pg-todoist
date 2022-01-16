@@ -83,7 +83,7 @@ jobs:
         env:
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_DB: testdb
+          POSTGRES_DB: postgres
           POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
         # Set health checks to wait until postgres has started
         options: >-
