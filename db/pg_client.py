@@ -14,9 +14,11 @@ POSTGRES_HOST = config("POSTGRES_HOST", cast=str, default="app-db")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 DB_URL_STR = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
 TEST_DB = "testdb"
+
 print("++++++++++++++++++++++++++++++++++++++++")
 print(DB_URL_STR)
 print("++++++++++++++++++++++++++++++++++++++++")
+
 
 def drop_all(connection):
     # Generate cursor.
@@ -78,7 +80,16 @@ def create_all(connection):
 
 if __name__ == "__main__":
     # Connect to database.
-    connection = psycopg2.connect(DB_URL_STR)
+    # connection = psycopg2.connect(DB_URL_STR)
+
+
+    # Connect to an existing database
+    connection = psycopg2.connect(user=f"{POSTGRES_USER}",
+                                  password=f"{POSTGRES_PASSWORD}",
+                                  host=f"{POSTGRES_HOST}",
+                                  port=f"{POSTGRES_PORT}",
+                                  database=f"{POSTGRES_DB}")
+
     connection.autocommit = True
     # execute drop_all function.
     drop_all(connection)
