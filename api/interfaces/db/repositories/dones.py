@@ -22,7 +22,7 @@ class DonesRepository(BaseRepository):
                 if done is None:
                     return None
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(done.items()))
+                logger.info(dict(done))
                 done = DoneRead(**done)
                 return done
 
@@ -46,7 +46,7 @@ class DonesRepository(BaseRepository):
                 }
                 done = await self.db.fetch_one(query=CREATE_DONE_QUERY, values=query_values)
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(done.items()))
+                logger.info(dict(done))
                 done = DoneRead(**done)
                 return done
             except Exception as e:
@@ -65,7 +65,7 @@ class DonesRepository(BaseRepository):
                 query_values = {"id": task_id}
                 done = await self.db.fetch_one(query=DELETE_DONE_BY_ID_QUERY, values=query_values)
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(done.items()))
+                logger.info(dict(done))
                 done = DoneRead(**done)
                 return done
             except Exception as e:

@@ -31,7 +31,7 @@ class TasksRepository(BaseRepository):
                 query_values["status_type"] = status_type_value
                 task = await self.db.fetch_one(query=CREATE_TASK_QUERY, values=query_values)
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(task.items()))
+                logger.info(dict(task))
                 task = TaskRead(**task)
                 return task
             except Exception as e:
@@ -79,7 +79,8 @@ class TasksRepository(BaseRepository):
                 if task is None:
                     return None
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(task.items()))
+                logger.info(type(task))
+                logger.info(dict(task))
                 task_read = TaskDoneRead(**task)
                 return task_read
             except Exception as e:
@@ -99,7 +100,7 @@ class TasksRepository(BaseRepository):
                 if task is None:
                     return None
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(task.items()))
+                logger.info(dict(task))
                 task = TaskRead(**task)
                 return task
 
@@ -129,7 +130,7 @@ class TasksRepository(BaseRepository):
                 query_values = updated_params.dict()
                 task = await self.db.fetch_one(query=UPDATE_TASK_BY_ID_QUERY, values=query_values)
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(task.items()))
+                logger.info(dict(task))
                 task = TaskRead(**task)
                 return task
             except Exception as e:
@@ -152,7 +153,7 @@ class TasksRepository(BaseRepository):
                     query=DELETE_TASK_BY_ID_QUERY, values={"id": task_id}
                 )
                 logger.info("[databases.backends.postgres.Record]")
-                logger.info(dict(task.items()))
+                logger.info(dict(task))
                 task = TaskRead(**task)
                 return task
             except Exception as e:
