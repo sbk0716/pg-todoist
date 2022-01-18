@@ -26,6 +26,7 @@ class Task(Base):
 
     # Define table name
     __tablename__ = "tasks"
+    __table_args__ = {"schema": "todoist"}
 
     # PK
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -61,6 +62,7 @@ class Done(Base):
 
     # Define table name
     __tablename__ = "dones"
+    __table_args__ = {"schema": "todoist"}
 
     # PK&FK: Defines a dependency between two columns.(tasks.id <--> dones.id)
     # [The ON DELETE CASCADE]
@@ -69,7 +71,7 @@ class Done(Base):
     # Automatically updates all the referencing rows in the child table when the referenced rows in the parent table are updated.
     id = Column(
         Integer,
-        ForeignKey("tasks.id", onupdate="CASCADE", ondelete="CASCADE"),
+        ForeignKey("todoist.tasks.id", onupdate="CASCADE", ondelete="CASCADE"),
         primary_key=True,
         autoincrement=False,
     )
