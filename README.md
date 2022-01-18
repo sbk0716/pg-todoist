@@ -199,10 +199,21 @@ admin@gw-mac pg-todoist %
 
 
 # 3. Generate migratation file
-## (1)generate migratation file
+## (1)generate migratation file | manual
 ```sh
 admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
-root@589883599df0:/src# poetry run alembic revision --autogenerate -m "1_create_custom_schema_and_db"
+root@589883599df0:/src# 
+root@589883599df0:/src# poetry run alembic revision -m "1_create_todoist_schema"
+  Generating
+  /src/migrations/versions/81052877c664_1_create_todoist_schema.py ...  done
+root@589883599df0:/src# 
+```
+
+## (2)generate migratation file | autogenerate
+```sh
+admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
+root@589883599df0:/src# 
+root@589883599df0:/src# poetry run alembic revision --autogenerate -m "2_create_tasks_and_dones_table"
 POSTGRES_DB: coredb
 execute run_migrations_online
 INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
@@ -211,8 +222,7 @@ INFO  [alembic.autogenerate.compare] Detected added table 'todoist.tasks'
 INFO  [alembic.autogenerate.compare] Detected added index 'ix_todoist_tasks_status_type' on '['status_type']'
 INFO  [alembic.autogenerate.compare] Detected added index 'ix_todoist_tasks_title' on '['title']'
 INFO  [alembic.autogenerate.compare] Detected added table 'todoist.dones'
-INFO  [alembic.autogenerate.compare] Detected removed table 'alembic_version'
-  Generating /src/migrations/versions/a0f37245c465_1_create_custom_schema_and_db.py ...  done
+  Generating /src/migrations/versions/882759e705fc_2_create_tasks_and_dones_table.py ...  done
 root@589883599df0:/src# 
 ```
 
