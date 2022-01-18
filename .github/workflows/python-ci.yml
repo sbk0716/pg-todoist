@@ -146,14 +146,38 @@ jobs:
     - name: 'Check PostgreSQL information'
       run: |
         export PGPASSWORD=${POSTGRES_PASSWORD}
-        psql -p ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
-        psql -p ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;'
+        psql --port ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT datname, datdba, encoding, datcollate, datctype from pg_database;'
+        psql --port ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'SELECT usename, usesysid, usecreatedb, usesuper from pg_user;'
       env:
         ENV: test
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_HOST: localhost
         POSTGRES_DB: postgres
+        POSTGRES_PORT: 5432
+
+    - name: 'Creat testdb'
+      run: |
+        export PGPASSWORD=${POSTGRES_PASSWORD}
+        psql --port ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'CREATE DATABASE "testdb";'
+      env:
+        ENV: test
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_HOST: localhost
+        POSTGRES_DB: postgres
+        POSTGRES_PORT: 5432
+
+    - name: 'Creat schema on testdb'
+      run: |
+        export PGPASSWORD=${POSTGRES_PASSWORD}
+        psql --port ${POSTGRES_PORT} --host ${POSTGRES_HOST} --username ${POSTGRES_USER} --dbname ${POSTGRES_DB} --command 'CREATE SCHEMA IF NOT EXISTS "todoist";'
+      env:
+        ENV: test
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_HOST: localhost
+        POSTGRES_DB: testdb
         POSTGRES_PORT: 5432
 
     - name: 'Setup PostgreSQL service container'
