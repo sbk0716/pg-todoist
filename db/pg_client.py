@@ -15,9 +15,9 @@ def drop_all(connection):
     # Generate cursor.
     cursor = connection.cursor()
 
-    # DROP DATABASE
-    drop_db = f"DROP DATABASE IF EXISTS {TEST_DB};"
-    cursor.execute(drop_db)
+    # # DROP DATABASE
+    # drop_db = f"DROP DATABASE IF EXISTS {TEST_DB};"
+    # cursor.execute(drop_db)
 
     # DROP ROLE
     drop_role = "DROP ROLE IF EXISTS root;"
@@ -30,9 +30,9 @@ def create_all(connection):
     # Generate cursor.
     cursor = connection.cursor()
 
-    # CREATE DATABASE
-    create_db = f"CREATE DATABASE {TEST_DB};"
-    cursor.execute(create_db)
+    # # CREATE DATABASE
+    # create_db = f"CREATE DATABASE {TEST_DB};"
+    # cursor.execute(create_db)
 
     # CREATE ROLE
     create_role = f"CREATE ROLE root LOGIN SUPERUSER PASSWORD '{POSTGRES_PASSWORD}';"

@@ -84,7 +84,52 @@ CONTAINER ID   IMAGE                  COMMAND                  CREATED          
 admin@gw-mac pg-todoist % 
 ```
 
-## (3)migratation for app db
+## (3)create schema and testdb
+```sh
+admin@gw-mac pg-todoist % docker-compose exec app-db /bin/ash
+/ # 
+/ # psql --username admin --dbname coredb
+psql (14.1)
+Type "help" for help.
+
+coredb=# CREATE SCHEMA IF NOT EXISTS "todoist";
+CREATE SCHEMA
+coredb=# \dn
+ List of schemas
+  Name   | Owner 
+---------+-------
+ public  | admin
+ todoist | admin
+(2 rows)
+
+coredb=# CREATE DATABASE "testdb";
+CREATE DATABASE
+coredb=# \l
+                         List of databases
+   Name    | Owner | Encoding | Collate | Ctype | Access privileges 
+-----------+-------+----------+---------+-------+-------------------
+ coredb    | admin | UTF8     | C       | C     | 
+ postgres  | admin | UTF8     | C       | C     | 
+ template0 | admin | UTF8     | C       | C     | =c/admin         +
+           |       |          |         |       | admin=CTc/admin
+ template1 | admin | UTF8     | C       | C     | =c/admin         +
+           |       |          |         |       | admin=CTc/admin
+ testdb    | admin | UTF8     | C       | C     | 
+(5 rows) 
+coredb=# 
+coredb=# \c testdb
+You are now connected to database "testdb" as user "admin".
+testdb=# 
+testdb=# CREATE SCHEMA IF NOT EXISTS "todoist";
+CREATE SCHEMA
+testdb=# 
+testdb=# \q
+/ # 
+/ # exit
+admin@gw-mac pg-todoist % 
+```
+
+## (4)migratation for app db
 ```sh
 admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
 root@11e38a66e34a:/src# 
@@ -126,7 +171,7 @@ Path: /src/migrations/versions/e5cc805f99e4_1_create_tasks_and_dones_table.py
 root@11e38a66e34a:/src# 
 ```
 
-## (4)docker-compose down
+## (5)docker-compose down
 ```sh
 admin@gw-mac pg-todoist % docker-compose down
 Removing pg-todoist_app-api_1 ... done
