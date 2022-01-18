@@ -202,19 +202,18 @@ admin@gw-mac pg-todoist %
 ## (1)generate migratation file
 ```sh
 admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
-root@bd6bc0f7ab71:/src# poetry run alembic revision --autogenerate -m "1_create_tasks_and_dones_table"
+root@589883599df0:/src# poetry run alembic revision --autogenerate -m "1_create_custom_schema_and_db"
 POSTGRES_DB: coredb
 execute run_migrations_online
 INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
 INFO  [alembic.runtime.migration] Will assume transactional DDL.
-INFO  [alembic.ddl.postgresql] Detected sequence named 'tasks_id_seq' as owned by integer column 'tasks(id)', assuming SERIAL and omitting
-  Generating /src/migrations/versions/a349ab64cdd1_1_create_tasks_and_dones_table.py ...  done
-root@bd6bc0f7ab71:/src# 
-root@8025b42a4ce1:/src# poetry run black .
-reformatted migrations/versions/2b699da13ffa_update_tasks_column.py
-All done! ✨ 🍰 ✨
-1 file reformatted, 34 files left unchanged.
-root@8025b42a4ce1:/src# 
+INFO  [alembic.autogenerate.compare] Detected added table 'todoist.tasks'
+INFO  [alembic.autogenerate.compare] Detected added index 'ix_todoist_tasks_status_type' on '['status_type']'
+INFO  [alembic.autogenerate.compare] Detected added index 'ix_todoist_tasks_title' on '['title']'
+INFO  [alembic.autogenerate.compare] Detected added table 'todoist.dones'
+INFO  [alembic.autogenerate.compare] Detected removed table 'alembic_version'
+  Generating /src/migrations/versions/a0f37245c465_1_create_custom_schema_and_db.py ...  done
+root@589883599df0:/src# 
 ```
 
 
