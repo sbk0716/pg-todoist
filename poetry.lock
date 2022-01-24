@@ -156,7 +156,7 @@ toml = ["tomli"]
 
 [[package]]
 name = "databases"
-version = "0.5.4"
+version = "0.5.5"
 description = "Async database support for Python."
 category = "main"
 optional = false
@@ -576,7 +576,7 @@ standard = ["websockets (>=10.0)", "httptools (>=0.2.0,<0.4.0)", "watchgod (>=0.
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "175f605c2062158f29a719db37f223eedb4c8a0315484e0a4d390debb8d5f2fc"
+content-hash = "493747a69b9dda1a829f38914f4adcc20efd4116486b00f3b67a1798dccfc146"
 
 [metadata.files]
 alembic = [
@@ -697,8 +697,8 @@ coverage = [
     {file = "coverage-6.2.tar.gz", hash = "sha256:e2cad8093172b7d1595b4ad66f24270808658e11acf43a8f95b41276162eb5b8"},
 ]
 databases = [
-    {file = "databases-0.5.4-py3-none-any.whl", hash = "sha256:85a6b0dd92e4bc95205c08141baf1e192c8aedb2159ce03bee39bb4117cfed83"},
-    {file = "databases-0.5.4.tar.gz", hash = "sha256:04a3294d053bd8d9f4162fc4975ab11a3e9ad01ae37992adce84440725957fec"},
+    {file = "databases-0.5.5-py3-none-any.whl", hash = "sha256:97d9b9647216d1ab53ca61c059412b5c7b6e1f0bf8ce985477982ebcc7f278f3"},
+    {file = "databases-0.5.5.tar.gz", hash = "sha256:02c6b016c1c951c21cca281dc8e2e002c60dc44026c0084aabbd8c37514aeb37"},
 ]
 fastapi = [
     {file = "fastapi-0.72.0-py3-none-any.whl", hash = "sha256:7421a2f30e9ed1866874cff089733d4f9a0cd4f49b6ea3995c0de75e32bbb52f"},
