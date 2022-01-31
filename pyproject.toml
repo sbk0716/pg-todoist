@@ -7,7 +7,7 @@ authors = ["Your Name <you@example.com>"]
 [tool.poetry.dependencies]
 python = "^3.9"
 fastapi = {extras = ["latest"], version = "^0.72.0"}
-uvicorn = {extras = ["latest"], version = "^0.17.0"}
+uvicorn = {extras = ["latest"], version = "^0.17.1"}
 SQLAlchemy = {extras = ["latest"], version = "^1.4.29"}
 databases = {extras = ["latest"], version = "^0.5.4"}
 asyncpg = {extras = ["latest"], version = "^0.25.0"}
