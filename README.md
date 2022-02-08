@@ -392,7 +392,7 @@ root@aef0a7ee5af8:/src#
 ```
 
 
-# 5. Test
+# 6. Test
 ## (1)set up postgresql
 ```sh
 admin@gw-mac pg-todoist % docker-compose exec app-api /bin/bash
