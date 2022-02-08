@@ -6,7 +6,7 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = {extras = ["latest"], version = "^0.72.0"}
+fastapi = "^0.73.0"
 uvicorn = {extras = ["latest"], version = "^0.17.0"}
 SQLAlchemy = {extras = ["latest"], version = "^1.4.29"}
 databases = {extras = ["latest"], version = "^0.5.4"}
@@ -17,7 +17,7 @@ alembic = {extras = ["latest"], version = "^1.7.5"}
 pytest-asyncio = {extras = ["latest"], version = "^0.17.2"}
 httpx = {extras = ["latest"], version = "^0.21.3"}
 psycopg2 = {extras = ["latest"], version = "^2.9.3"}
-black = {extras = ["latest"], version = "^21.12b0"}
+black = {extras = ["latest"], version = "^22.1"}
 flake8 = {extras = ["latest"], version = "^4.0.1"}
 pytest-cov = {extras = ["latest"], version = "^3.0.0"}
 
