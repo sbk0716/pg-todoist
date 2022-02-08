@@ -16,6 +16,7 @@ on:
       - 'db/**'
       - 'tests/**'
       - '*.yaml'
+      - '*.toml'
 
 env:
   ENV: test
