@@ -14,7 +14,7 @@ asyncpg = {extras = ["latest"], version = "^0.25.0"}
 alembic = {extras = ["latest"], version = "^1.7.5"}
 
 [tool.poetry.dev-dependencies]
-pytest-asyncio = {extras = ["latest"], version = "^0.17.2"}
+pytest-asyncio = {extras = ["latest"], version = "^0.18.1"}
 httpx = {extras = ["latest"], version = "^0.21.3"}
 psycopg2 = {extras = ["latest"], version = "^2.9.3"}
 black = {extras = ["latest"], version = "^21.12b0"}
