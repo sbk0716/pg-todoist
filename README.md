@@ -86,7 +86,7 @@ admin@gw-mac pg-todoist %
 
 ## (3)create schema and testdb
 ```sh
-admin@gw-mac pg-todoist % docker-compose exec app-db /bin/ash
+admin@gw-mac pg-todoist % docker-compose exec app-db /bin/bash
 / # 
 / # psql --username admin --dbname coredb
 psql (14.1)

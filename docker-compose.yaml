@@ -24,7 +24,7 @@ services:
     # Files containing environment variables that will be included
     env_file: .env
     # The image that will be pulled for the service
-    image: postgres:14.1-alpine
+    image: postgres:latest
     # [platform]
     # Not all images are available for ARM64 architecture.
     # You can add --platform linux/amd64 to run an Intel image under emulation.
@@ -36,7 +36,7 @@ services:
       - ./db/postgresql.conf:/etc/postgresql/postgresql.conf
     # Ports that will be exposed to the host
     ports:
-      - 15432:5432              # Connect port 15432 on your local PC to port 5432 on the docker container
+      - 25432:5432              # Connect port 25432 on your local PC to port 5432 on the docker container
 
 # Named volumes that are shared among multiple services
 volumes:
