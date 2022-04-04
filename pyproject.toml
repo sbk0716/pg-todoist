@@ -8,7 +8,7 @@ authors = ["Your Name <you@example.com>"]
 python = "^3.9"
 fastapi = "^0.74.1"
 uvicorn = {extras = ["latest"], version = "^0.17.0"}
-SQLAlchemy = "^1.4.31"
+SQLAlchemy = "^1.4.34"
 databases = {extras = ["latest"], version = "^0.5.4"}
 asyncpg = {extras = ["latest"], version = "^0.25.0"}
 alembic = {extras = ["latest"], version = "^1.7.5"}
