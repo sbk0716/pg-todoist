@@ -6,7 +6,7 @@ authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-fastapi = "^0.74.1"
+fastapi = "^0.89.0"
 uvicorn = {extras = ["latest"], version = "^0.17.0"}
 SQLAlchemy = "^1.4.31"
 databases = {extras = ["latest"], version = "^0.5.4"}
